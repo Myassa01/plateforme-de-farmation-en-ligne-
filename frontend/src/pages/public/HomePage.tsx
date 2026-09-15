@@ -9,7 +9,10 @@ export function HomePage() {
     <div className="min-h-screen bg-slate-50">
       <nav className="flex items-center justify-between px-6 py-4">
         <span className="text-xl font-bold text-brand-600">LearnHub</span>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          <Link to="/courses" className="text-sm font-medium text-slate-700 hover:underline">
+            Formations
+          </Link>
           {isAuthenticated ? (
             <Link to="/student">
               <Button variant="secondary">Mon tableau de bord</Button>

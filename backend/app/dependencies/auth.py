@@ -36,6 +36,18 @@ def get_current_user(
     return user
 
 
+def get_current_user_optional(
+    token: str | None = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if not token:
+        return None
+    try:
+        return get_current_user(token=token, db=db)
+    except UnauthorizedError:
+        return None
+
+
 def require_role(*allowed_roles: UserRole) -> Callable[[User], User]:
     def dependency(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed_roles:
