@@ -2,7 +2,7 @@
 
 Plateforme de formation en ligne (type Udemy) — projet Full Stack avec React/TypeScript côté client et FastAPI/PostgreSQL côté serveur.
 
-> **Statut** : Phase 2 en cours — backend (auth, users) fonctionnel. Le catalogue de cours, le lecteur de cours, les quiz, certificats, etc. arrivent en Phase 4.
+> **Statut** : Phase 3 terminée — backend (auth, users) et frontend (routing, auth, dashboards par rôle) fonctionnels et connectés. Le catalogue de cours, le lecteur de cours, les quiz, certificats, etc. arrivent en Phase 4.
 
 ## Fonctionnalités (prévues à terme)
 
@@ -72,13 +72,27 @@ uvicorn app.main:app --reload
 
 L'API est disponible sur `http://localhost:8000`, la documentation Swagger sur `http://localhost:8000/docs`.
 
+### Frontend — installation locale (sans Docker)
+
+```bash
+cd frontend
+npm install
+
+cp .env.example .env
+# Éditer .env si l'API ne tourne pas sur http://localhost:8000
+
+npm run dev
+```
+
+L'application est disponible sur `http://localhost:5173`.
+
 ### Lancement avec Docker
 
 ```bash
 docker compose up --build
 ```
 
-Cela démarre PostgreSQL et le backend. Le frontend sera ajouté au `docker-compose.yml` en Phase 3.
+Cela démarre PostgreSQL, le backend et le frontend en une seule commande.
 
 ## Configuration `.env`
 
