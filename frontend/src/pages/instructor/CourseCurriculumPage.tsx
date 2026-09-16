@@ -21,7 +21,9 @@ export function CourseCurriculumPage() {
   const deleteLesson = useDeleteLesson(courseId ?? '')
 
   const [newSectionTitle, setNewSectionTitle] = useState('')
-  const [lessonDrafts, setLessonDrafts] = useState<Record<string, string>>({})
+  const [lessonDrafts, setLessonDrafts] = useState<
+    Record<string, { title: string; videoUrl: string; isPreview: boolean }>
+  >({})
   const [addingLessonTo, setAddingLessonTo] = useState<string | null>(null)
   const [expandedQuizLessonId, setExpandedQuizLessonId] = useState<string | null>(null)
 
@@ -37,13 +39,24 @@ export function CourseCurriculumPage() {
   }
 
   const handleAddLesson = (sectionId: string) => {
-    const title = lessonDrafts[sectionId]?.trim()
+    const draft = lessonDrafts[sectionId]
+    const title = draft?.title.trim()
     if (!title) return
     createLesson.mutate(
-      { sectionId, payload: { title } },
+      {
+        sectionId,
+        payload: {
+          title,
+          video_url: draft.videoUrl.trim() || undefined,
+          is_preview: draft.isPreview,
+        },
+      },
       {
         onSuccess: () => {
-          setLessonDrafts((prev) => ({ ...prev, [sectionId]: '' }))
+          setLessonDrafts((prev) => ({
+            ...prev,
+            [sectionId]: { title: '', videoUrl: '', isPreview: false },
+          }))
           setAddingLessonTo(null)
         },
       },
@@ -131,23 +144,68 @@ export function CourseCurriculumPage() {
                 </div>
 
                 {addingLessonTo === section.id ? (
-                  <div className="mt-3 flex gap-2">
+                  <div className="mt-3 flex flex-col gap-2 rounded-md bg-slate-50 p-3">
                     <input
                       type="text"
-                      value={lessonDrafts[section.id] ?? ''}
+                      value={lessonDrafts[section.id]?.title ?? ''}
                       onChange={(event) =>
-                        setLessonDrafts((prev) => ({ ...prev, [section.id]: event.target.value }))
+                        setLessonDrafts((prev) => ({
+                          ...prev,
+                          [section.id]: {
+                            title: event.target.value,
+                            videoUrl: prev[section.id]?.videoUrl ?? '',
+                            isPreview: prev[section.id]?.isPreview ?? false,
+                          },
+                        }))
                       }
                       placeholder="Titre de la lesson"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                     />
-                    <Button
-                      variant="secondary"
-                      isLoading={createLesson.isPending}
-                      onClick={() => handleAddLesson(section.id)}
-                    >
-                      Ajouter
-                    </Button>
+                    <input
+                      type="url"
+                      value={lessonDrafts[section.id]?.videoUrl ?? ''}
+                      onChange={(event) =>
+                        setLessonDrafts((prev) => ({
+                          ...prev,
+                          [section.id]: {
+                            title: prev[section.id]?.title ?? '',
+                            videoUrl: event.target.value,
+                            isPreview: prev[section.id]?.isPreview ?? false,
+                          },
+                        }))
+                      }
+                      placeholder="URL directe d'un fichier vidéo (.mp4, .webm)"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                    />
+                    <label className="flex items-center gap-2 text-sm text-slate-600">
+                      <input
+                        type="checkbox"
+                        checked={lessonDrafts[section.id]?.isPreview ?? false}
+                        onChange={(event) =>
+                          setLessonDrafts((prev) => ({
+                            ...prev,
+                            [section.id]: {
+                              title: prev[section.id]?.title ?? '',
+                              videoUrl: prev[section.id]?.videoUrl ?? '',
+                              isPreview: event.target.checked,
+                            },
+                          }))
+                        }
+                      />
+                      Aperçu gratuit (visible sans inscription)
+                    </label>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="secondary"
+                        isLoading={createLesson.isPending}
+                        onClick={() => handleAddLesson(section.id)}
+                      >
+                        Ajouter
+                      </Button>
+                      <Button variant="ghost" onClick={() => setAddingLessonTo(null)}>
+                        Annuler
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Button
