@@ -13,4 +13,12 @@ export const authApi = {
     apiClient
       .get<User>('/auth/me', accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : undefined)
       .then((res) => res.data),
+
+  forgotPassword: (email: string) =>
+    apiClient.post('/auth/forgot-password', { email }).then((res) => res.data),
+
+  resetPassword: (token: string, newPassword: string) =>
+    apiClient
+      .post('/auth/reset-password', { token, new_password: newPassword })
+      .then((res) => res.data),
 }

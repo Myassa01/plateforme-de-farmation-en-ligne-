@@ -8,7 +8,9 @@ import { loginSchema, type LoginFormValues } from '@/features/auth/schemas'
 
 export function LoginPage() {
   const location = useLocation()
-  const justRegistered = Boolean((location.state as { justRegistered?: boolean } | null)?.justRegistered)
+  const locationState = location.state as { justRegistered?: boolean; justReset?: boolean } | null
+  const justRegistered = Boolean(locationState?.justRegistered)
+  const justReset = Boolean(locationState?.justReset)
 
   const {
     register,
@@ -38,6 +40,12 @@ export function LoginPage() {
           </div>
         )}
 
+        {justReset && (
+          <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+            Mot de passe réinitialisé avec succès, vous pouvez vous connecter.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
           <TextField
             label="Email"
@@ -53,6 +61,13 @@ export function LoginPage() {
             error={errors.password?.message}
             {...register('password')}
           />
+
+          <Link
+            to="/forgot-password"
+            className="-mt-2 self-end text-sm font-medium text-brand-600 hover:underline"
+          >
+            Mot de passe oublié ?
+          </Link>
 
           {login.isError && (
             <p className="text-sm text-red-600">{login.error.message}</p>

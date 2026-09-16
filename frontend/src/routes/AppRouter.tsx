@@ -13,9 +13,11 @@ import { InstructorCoursesPage } from '@/pages/instructor/InstructorCoursesPage'
 import { InstructorDashboardPage } from '@/pages/instructor/InstructorDashboardPage'
 import { CourseDetailsPage } from '@/pages/public/CourseDetailsPage'
 import { CoursesPage } from '@/pages/public/CoursesPage'
+import { ForgotPasswordPage } from '@/pages/public/ForgotPasswordPage'
 import { HomePage } from '@/pages/public/HomePage'
 import { LoginPage } from '@/pages/public/LoginPage'
 import { RegisterPage } from '@/pages/public/RegisterPage'
+import { ResetPasswordPage } from '@/pages/public/ResetPasswordPage'
 import { NotificationsPage } from '@/pages/shared/NotificationsPage'
 import { ProfilePage } from '@/pages/shared/ProfilePage'
 import { CertificatesPage } from '@/pages/student/CertificatesPage'
@@ -34,6 +36,8 @@ export function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/courses" element={<CoursesPage />} />
       <Route path="/courses/:courseId" element={<CourseDetailsPage />} />
 

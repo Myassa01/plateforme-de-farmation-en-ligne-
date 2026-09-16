@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     storage_dir: str = "./storage"
     max_upload_size_mb: int = 200
 
+    smtp_host: str = ""
+    smtp_port: int = 2525
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "no-reply@learnhub.dev"
+    frontend_base_url: str = "http://localhost:5173"
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

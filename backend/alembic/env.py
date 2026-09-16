@@ -14,6 +14,7 @@ from app.models import (  # noqa: F401
     lesson,
     lesson_progress,
     notification,
+    password_reset_token,
     section,
     user,
     wishlist,
