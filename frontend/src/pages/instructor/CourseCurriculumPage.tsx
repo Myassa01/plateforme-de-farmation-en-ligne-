@@ -6,14 +6,15 @@ import { Skeleton } from '@/components/Skeleton'
 import {
   useCreateLesson,
   useCreateSection,
-  useCurriculum,
+  useCurriculumEditor,
   useDeleteLesson,
   useDeleteSection,
 } from '@/features/curriculum/hooks'
+import { QuizBuilderPanel } from '@/features/quiz/components/QuizBuilderPanel'
 
 export function CourseCurriculumPage() {
   const { courseId } = useParams<{ courseId: string }>()
-  const { data: sections, isLoading } = useCurriculum(courseId)
+  const { data: sections, isLoading } = useCurriculumEditor(courseId)
   const createSection = useCreateSection(courseId ?? '')
   const deleteSection = useDeleteSection(courseId ?? '')
   const createLesson = useCreateLesson(courseId ?? '')
@@ -22,6 +23,7 @@ export function CourseCurriculumPage() {
   const [newSectionTitle, setNewSectionTitle] = useState('')
   const [lessonDrafts, setLessonDrafts] = useState<Record<string, string>>({})
   const [addingLessonTo, setAddingLessonTo] = useState<string | null>(null)
+  const [expandedQuizLessonId, setExpandedQuizLessonId] = useState<string | null>(null)
 
   if (!courseId) return null
 
@@ -52,7 +54,7 @@ export function CourseCurriculumPage() {
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold text-slate-900">Curriculum de la formation</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Organisez votre formation en sections et lessons.
+        Organisez votre formation en sections, lessons et quiz.
       </p>
 
       <div className="mt-6">
@@ -91,19 +93,39 @@ export function CourseCurriculumPage() {
 
                 <div className="mt-3 flex flex-col gap-2">
                   {section.lessons.map((lesson) => (
-                    <div
-                      key={lesson.id}
-                      className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
-                    >
-                      <span className="text-sm text-slate-700">{lesson.title}</span>
-                      <Button
-                        variant="ghost"
-                        className="py-1! text-xs"
-                        isLoading={deleteLesson.isPending}
-                        onClick={() => deleteLesson.mutate(lesson.id)}
-                      >
-                        Supprimer
-                      </Button>
+                    <div key={lesson.id} className="rounded-lg bg-slate-50 px-3 py-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-slate-700">{lesson.title}</span>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            className="py-1! text-xs"
+                            onClick={() =>
+                              setExpandedQuizLessonId(
+                                expandedQuizLessonId === lesson.id ? null : lesson.id,
+                              )
+                            }
+                          >
+                            {lesson.quiz ? 'Quiz' : '+ Quiz'}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            className="py-1! text-xs"
+                            isLoading={deleteLesson.isPending}
+                            onClick={() => deleteLesson.mutate(lesson.id)}
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+                      </div>
+
+                      {expandedQuizLessonId === lesson.id && (
+                        <QuizBuilderPanel
+                          courseId={courseId}
+                          lessonId={lesson.id}
+                          quiz={lesson.quiz}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

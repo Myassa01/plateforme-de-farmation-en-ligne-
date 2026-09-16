@@ -10,13 +10,24 @@ export function useCurriculum(courseId: string | undefined) {
   })
 }
 
+export function useCurriculumEditor(courseId: string | undefined) {
+  return useQuery({
+    queryKey: ['curriculum-editor', courseId],
+    queryFn: () => curriculumApi.getForEditor(courseId as string),
+    enabled: Boolean(courseId),
+  })
+}
+
+function invalidateCurriculum(queryClient: ReturnType<typeof useQueryClient>, courseId: string) {
+  queryClient.invalidateQueries({ queryKey: ['curriculum', courseId] })
+  queryClient.invalidateQueries({ queryKey: ['curriculum-editor', courseId] })
+}
+
 export function useCreateSection(courseId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: CreateSectionPayload) => curriculumApi.createSection(courseId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['curriculum', courseId] })
-    },
+    onSuccess: () => invalidateCurriculum(queryClient, courseId),
   })
 }
 
@@ -24,9 +35,7 @@ export function useDeleteSection(courseId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (sectionId: string) => curriculumApi.deleteSection(sectionId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['curriculum', courseId] })
-    },
+    onSuccess: () => invalidateCurriculum(queryClient, courseId),
   })
 }
 
@@ -35,9 +44,7 @@ export function useCreateLesson(courseId: string) {
   return useMutation({
     mutationFn: ({ sectionId, payload }: { sectionId: string; payload: CreateLessonPayload }) =>
       curriculumApi.createLesson(sectionId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['curriculum', courseId] })
-    },
+    onSuccess: () => invalidateCurriculum(queryClient, courseId),
   })
 }
 
@@ -45,8 +52,6 @@ export function useDeleteLesson(courseId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (lessonId: string) => curriculumApi.deleteLesson(lessonId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['curriculum', courseId] })
-    },
+    onSuccess: () => invalidateCurriculum(queryClient, courseId),
   })
 }

@@ -7,10 +7,19 @@ from app.database.session import get_db
 from app.dependencies.auth import require_role
 from app.models.user import User, UserRole
 from app.schemas.lesson import LessonCreate, LessonOut, LessonUpdate
-from app.schemas.section import SectionCreate, SectionOut, SectionUpdate
+from app.schemas.section import SectionCreate, SectionOut, SectionUpdate, SectionWithQuizzesOut
 from app.services.curriculum_service import CurriculumService
 
 router = APIRouter(tags=["curriculum"])
+
+
+@router.get("/courses/{course_id}/curriculum-editor", response_model=list[SectionWithQuizzesOut])
+def get_curriculum_editor(
+    course_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
+):
+    return CurriculumService(db).list_sections_for_editor(course_id, current_user)
 
 
 @router.post(

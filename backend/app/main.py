@@ -13,6 +13,8 @@ from app.routers import (
     enrollments,
     notifications,
     player,
+    quiz_attempts,
+    quiz_builder,
     users,
     wishlist,
 )
@@ -43,6 +45,8 @@ app.include_router(wishlist.router)
 app.include_router(notifications.router)
 app.include_router(curriculum.router)
 app.include_router(player.router)
+app.include_router(quiz_builder.router)
+app.include_router(quiz_attempts.router)
 
 
 @app.get("/health", tags=["health"])

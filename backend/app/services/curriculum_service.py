@@ -24,6 +24,10 @@ class CurriculumService:
     def list_sections(self, course_id: uuid.UUID) -> list[Section]:
         return self.section_repo.list_for_course(course_id)
 
+    def list_sections_for_editor(self, course_id: uuid.UUID, current_user: User) -> list[Section]:
+        self._get_owned_course(course_id, current_user)
+        return self.section_repo.list_for_course(course_id)
+
     def create_section(self, course_id: uuid.UUID, current_user: User, payload: SectionCreate) -> Section:
         course = self._get_owned_course(course_id, current_user)
         section = Section(

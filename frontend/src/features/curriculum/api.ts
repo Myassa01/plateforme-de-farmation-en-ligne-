@@ -5,12 +5,18 @@ import type {
   Lesson,
   Section,
   SectionWithLessons,
+  SectionWithQuizzes,
 } from './types'
 
 export const curriculumApi = {
   getForCourse: (courseId: string) =>
     apiClient
       .get<SectionWithLessons[]>(`/courses/${courseId}/curriculum`)
+      .then((res) => res.data),
+
+  getForEditor: (courseId: string) =>
+    apiClient
+      .get<SectionWithQuizzes[]>(`/courses/${courseId}/curriculum-editor`)
       .then((res) => res.data),
 
   createSection: (courseId: string, payload: CreateSectionPayload) =>

@@ -2,7 +2,7 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.schemas.lesson import LessonOut
+from app.schemas.lesson import LessonOut, LessonWithQuizOut
 
 
 class SectionCreate(BaseModel):
@@ -25,3 +25,7 @@ class SectionOut(BaseModel):
 
 class SectionWithLessonsOut(SectionOut):
     lessons: list[LessonOut]
+
+
+class SectionWithQuizzesOut(SectionOut):
+    lessons: list[LessonWithQuizOut]

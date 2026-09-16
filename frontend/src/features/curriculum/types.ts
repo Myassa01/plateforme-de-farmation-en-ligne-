@@ -1,3 +1,5 @@
+import type { QuizBuilder } from '@/features/quiz/types'
+
 export interface Lesson {
   id: string
   section_id: string
@@ -6,6 +8,11 @@ export interface Lesson {
   duration_seconds: number
   order_index: number
   is_preview: boolean
+  quiz_id: string | null
+}
+
+export interface LessonWithQuiz extends Lesson {
+  quiz: QuizBuilder | null
 }
 
 export interface Section {
@@ -17,6 +24,10 @@ export interface Section {
 
 export interface SectionWithLessons extends Section {
   lessons: Lesson[]
+}
+
+export interface SectionWithQuizzes extends Section {
+  lessons: LessonWithQuiz[]
 }
 
 export interface CreateSectionPayload {

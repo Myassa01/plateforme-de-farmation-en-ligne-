@@ -8,6 +8,7 @@ from app.database.base import Base
 from app.database.types import GUID
 
 if TYPE_CHECKING:
+    from app.models.quiz import Quiz
     from app.models.section import Section
 
 
@@ -25,3 +26,4 @@ class Lesson(Base):
     is_preview: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     section: Mapped["Section"] = relationship(back_populates="lessons")
+    quiz: Mapped["Quiz | None"] = relationship(cascade="all, delete-orphan", uselist=False)

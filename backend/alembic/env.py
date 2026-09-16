@@ -8,6 +8,8 @@ from app.database.base import Base
 
 # Import all models so Base.metadata is aware of them for autogenerate.
 from app.models import (  # noqa: F401
+    answer,
+    attempt_answer,
     category,
     course,
     enrollment,
@@ -15,6 +17,9 @@ from app.models import (  # noqa: F401
     lesson_progress,
     notification,
     password_reset_token,
+    question,
+    quiz,
+    quiz_attempt,
     section,
     user,
     wishlist,

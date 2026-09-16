@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/Skeleton'
 import { useCurriculum } from '@/features/curriculum/hooks'
 import type { Lesson } from '@/features/curriculum/types'
 import { useCompleteLesson, useCourseProgress } from '@/features/player/hooks'
+import { QuizPlayer } from '@/features/quiz/components/QuizPlayer'
 import { clsx } from '@/utils/clsx'
 
 export function CoursePlayerPage() {
@@ -109,6 +110,12 @@ export function CoursePlayerPage() {
             <Badge tone="success">Terminée</Badge>
           )}
         </div>
+
+        {activeLesson?.quiz_id && (
+          <div className="mt-6">
+            <QuizPlayer quizId={activeLesson.quiz_id} />
+          </div>
+        )}
       </div>
 
       <aside className="w-80 shrink-0">
