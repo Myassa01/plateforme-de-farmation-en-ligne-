@@ -5,7 +5,6 @@ const navItems = [
   { label: 'Utilisateurs', to: '/admin/users' },
   { label: 'Formations', to: '/admin/courses' },
   { label: 'Catégories', to: '/admin/categories' },
-  { label: 'Signalements', to: '/admin/reports' },
   { label: 'Profil', to: '/admin/profile' },
 ]
 

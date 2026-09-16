@@ -6,3 +6,13 @@ export interface Category {
   icon: string | null
   created_at: string
 }
+
+export interface CreateCategoryPayload {
+  name: string
+  description?: string
+}
+
+export interface UpdateCategoryPayload {
+  name?: string
+  description?: string
+}
