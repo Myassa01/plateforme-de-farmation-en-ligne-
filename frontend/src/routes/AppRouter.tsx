@@ -18,6 +18,8 @@ import { NotificationsPage } from '@/pages/shared/NotificationsPage'
 import { ProfilePage } from '@/pages/shared/ProfilePage'
 import { CertificatesPage } from '@/pages/student/CertificatesPage'
 import { MyCoursesPage } from '@/pages/student/MyCoursesPage'
+import { StudentCourseDetailsPage } from '@/pages/student/StudentCourseDetailsPage'
+import { StudentCoursesCatalogPage } from '@/pages/student/StudentCoursesCatalogPage'
 import { StudentDashboardPage } from '@/pages/student/StudentDashboardPage'
 import { WishlistPage } from '@/pages/student/WishlistPage'
 import { ProtectedRoute } from './ProtectedRoute'
@@ -37,6 +39,8 @@ export function AppRouter() {
           <Route element={<StudentLayout />}>
             <Route path="/student" element={<StudentDashboardPage />} />
             <Route path="/student/courses" element={<MyCoursesPage />} />
+            <Route path="/student/discover" element={<StudentCoursesCatalogPage />} />
+            <Route path="/student/discover/:courseId" element={<StudentCourseDetailsPage />} />
             <Route path="/student/certificates" element={<CertificatesPage />} />
             <Route path="/student/wishlist" element={<WishlistPage />} />
             <Route path="/student/notifications" element={<NotificationsPage />} />

@@ -32,7 +32,7 @@ export function MyCoursesPage() {
             {data.map((enrollment) => (
               <Link
                 key={enrollment.id}
-                to={`/courses/${enrollment.course.id}`}
+                to={`/student/discover/${enrollment.course.id}`}
                 className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
               >
                 <div>
@@ -50,7 +50,10 @@ export function MyCoursesPage() {
         )}
       </div>
 
-      <Link to="/courses" className="mt-6 inline-block text-sm font-medium text-brand-600 hover:underline">
+      <Link
+        to="/student/discover"
+        className="mt-6 inline-block text-sm font-medium text-brand-600 hover:underline"
+      >
         Découvrir plus de formations
       </Link>
     </div>

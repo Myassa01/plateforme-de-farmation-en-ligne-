@@ -33,7 +33,7 @@ export function WishlistPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {data.map((item) => (
               <div key={item.id} className="relative">
-                <CourseCard course={item.course} />
+                <CourseCard course={item.course} linkBasePath="/student/discover" />
                 <Button
                   variant="secondary"
                   className="absolute right-2 top-2 !px-2 !py-1 text-xs"
@@ -51,7 +51,10 @@ export function WishlistPage() {
         )}
       </div>
 
-      <Link to="/courses" className="mt-6 inline-block text-sm font-medium text-brand-600 hover:underline">
+      <Link
+        to="/student/discover"
+        className="mt-6 inline-block text-sm font-medium text-brand-600 hover:underline"
+      >
         Parcourir plus de formations
       </Link>
     </div>

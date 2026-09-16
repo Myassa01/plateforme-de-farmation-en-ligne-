@@ -5,12 +5,13 @@ import { formatPrice, levelLabels } from '../utils'
 
 interface CourseCardProps {
   course: CourseListItem
+  linkBasePath?: string
 }
 
-export function CourseCard({ course }: CourseCardProps) {
+export function CourseCard({ course, linkBasePath = '/courses' }: CourseCardProps) {
   return (
     <Link
-      to={`/courses/${course.id}`}
+      to={`${linkBasePath}/${course.id}`}
       className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200 transition-shadow hover:shadow-md"
     >
       <div className="aspect-video w-full bg-slate-100">

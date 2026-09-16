@@ -2,6 +2,7 @@ import { DashboardLayout } from './DashboardLayout'
 
 const navItems = [
   { label: 'Tableau de bord', to: '/student' },
+  { label: 'Découvrir', to: '/student/discover' },
   { label: 'Mes formations', to: '/student/courses' },
   { label: 'Mes certificats', to: '/student/certificates' },
   { label: 'Favoris', to: '/student/wishlist' },
