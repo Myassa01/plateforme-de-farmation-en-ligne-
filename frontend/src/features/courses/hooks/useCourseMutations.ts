@@ -8,6 +8,7 @@ export function useCreateCourse() {
     mutationFn: (payload: CreateCoursePayload) => coursesApi.create(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
     },
   })
 }
@@ -18,6 +19,8 @@ export function useSubmitCourse() {
     mutationFn: (id: string) => coursesApi.submit(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['pending-courses'] })
     },
   })
 }
@@ -28,6 +31,7 @@ export function useApproveCourse() {
     mutationFn: (id: string) => coursesApi.approve(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
       queryClient.invalidateQueries({ queryKey: ['courses'] })
     },
   })
@@ -39,6 +43,20 @@ export function useRejectCourse() {
     mutationFn: ({ id, reason }: { id: string; reason: string }) => coursesApi.reject(id, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
+    },
+  })
+}
+
+export function useDeleteCourse() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => coursesApi.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['pending-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['courses'] })
     },
   })
 }

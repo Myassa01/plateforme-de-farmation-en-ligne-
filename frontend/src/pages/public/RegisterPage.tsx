@@ -13,7 +13,6 @@ export function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: 'student' },
   })
 
   const registerMutation = useRegister()
@@ -47,20 +46,6 @@ export function RegisterPage() {
             error={errors.email?.message}
             {...register('email')}
           />
-
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="role" className="text-sm font-medium text-slate-700">
-              Je m'inscris en tant que
-            </label>
-            <select
-              id="role"
-              className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-              {...register('role')}
-            >
-              <option value="student">Étudiant</option>
-              <option value="instructor">Instructeur</option>
-            </select>
-          </div>
 
           <TextField
             label="Mot de passe"

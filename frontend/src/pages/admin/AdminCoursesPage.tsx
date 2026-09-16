@@ -1,13 +1,15 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
 import { useApproveCourse, useRejectCourse } from '@/features/courses/hooks/useCourseMutations'
-import { usePendingCourses } from '@/features/courses/hooks/usePendingCourses'
-import { formatPrice } from '@/features/courses/utils'
+import { useAllCourses } from '@/features/courses/hooks/useAllCourses'
+import { formatPrice, statusLabels, statusTones } from '@/features/courses/utils'
 
 export function AdminCoursesPage() {
-  const { data, isLoading } = usePendingCourses()
+  const { data, isLoading } = useAllCourses()
   const approveCourse = useApproveCourse()
   const rejectCourse = useRejectCourse()
   const [rejectingId, setRejectingId] = useState<string | null>(null)
@@ -28,7 +30,12 @@ export function AdminCoursesPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900">Formations en attente de validation</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-slate-900">Toutes les formations</h1>
+        <Link to="/admin/courses/new">
+          <Button variant="primary">Créer une formation</Button>
+        </Link>
+      </div>
 
       <div className="mt-6">
         {isLoading && (
@@ -41,8 +48,8 @@ export function AdminCoursesPage() {
 
         {data && data.items.length === 0 && (
           <EmptyState
-            title="Aucune formation en attente"
-            description="Toutes les soumissions ont été traitées."
+            title="Aucune formation pour le moment"
+            description="Créez la première formation de la plateforme."
           />
         )}
 
@@ -52,26 +59,35 @@ export function AdminCoursesPage() {
               <div key={course.id} className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-slate-900">{course.title}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-slate-900">{course.title}</p>
+                      <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
+                    </div>
                     <p className="text-sm text-slate-500">
                       Par {course.instructor.full_name} · {course.category.name} ·{' '}
                       {formatPrice(course.price)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="primary"
-                      isLoading={approveCourse.isPending}
-                      onClick={() => approveCourse.mutate(course.id)}
-                    >
-                      Approuver
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => setRejectingId(rejectingId === course.id ? null : course.id)}
-                    >
-                      Rejeter
-                    </Button>
+                    {course.status === 'pending' && (
+                      <>
+                        <Button
+                          variant="primary"
+                          isLoading={approveCourse.isPending}
+                          onClick={() => approveCourse.mutate(course.id)}
+                        >
+                          Approuver
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() =>
+                            setRejectingId(rejectingId === course.id ? null : course.id)
+                          }
+                        >
+                          Rejeter
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
 

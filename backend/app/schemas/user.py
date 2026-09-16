@@ -12,10 +12,7 @@ class UserBase(BaseModel):
 
 
 class UserRegister(UserBase):
-    model_config = ConfigDict(use_enum_values=True)
-
     password: str = Field(min_length=8, max_length=128)
-    role: UserRole = UserRole.STUDENT
 
 
 class UserLogin(BaseModel):
@@ -29,6 +26,10 @@ class UserUpdate(BaseModel):
     avatar_url: str | None = None
 
 
+class UserRoleUpdate(BaseModel):
+    role: UserRole
+
+
 class UserOut(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
@@ -38,3 +39,10 @@ class UserOut(UserBase):
     bio: str | None
     is_active: bool
     created_at: datetime
+
+
+class PaginatedUsers(BaseModel):
+    items: list[UserOut]
+    total: int
+    page: int
+    page_size: int

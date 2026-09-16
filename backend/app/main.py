@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.exceptions.base import AppError
-from app.routers import auth, categories, courses, users
+from app.routers import admin_users, auth, categories, courses, users
 
 app = FastAPI(title="LearnHub API", version="0.1.0")
 
@@ -24,6 +24,7 @@ def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
 
 app.include_router(auth.router)
 app.include_router(users.router)
+app.include_router(admin_users.router)
 app.include_router(categories.router)
 app.include_router(courses.router)
 

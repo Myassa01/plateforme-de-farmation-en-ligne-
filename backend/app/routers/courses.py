@@ -75,9 +75,9 @@ def get_course(
 def create_course(
     payload: CourseCreate,
     db: Session = Depends(get_db),
-    instructor: User = Depends(require_role(UserRole.INSTRUCTOR)),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
 ):
-    return CourseService(db).create_course(instructor, payload)
+    return CourseService(db).create_course(current_user, payload)
 
 
 @router.patch("/courses/{course_id}", response_model=CourseOut)
@@ -103,7 +103,7 @@ def delete_course(
 def submit_course(
     course_id: uuid.UUID,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role(UserRole.INSTRUCTOR)),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
 ):
     return CourseService(db).submit_for_review(course_id, current_user)
 
@@ -134,6 +134,21 @@ def list_instructor_courses(
     instructor: User = Depends(require_role(UserRole.INSTRUCTOR)),
 ):
     items, total = CourseService(db).list_instructor_courses(instructor.id, filters)
+    return PaginatedCourses(
+        items=[CourseListItem.model_validate(course) for course in items],
+        total=total,
+        page=filters.page,
+        page_size=filters.page_size,
+    )
+
+
+@router.get("/admin/courses", response_model=PaginatedCourses)
+def list_all_courses(
+    filters: CourseFilters = Depends(_build_filters),
+    db: Session = Depends(get_db),
+    _admin: User = Depends(require_role(UserRole.ADMIN)),
+):
+    items, total = CourseService(db).list_all_courses(filters)
     return PaginatedCourses(
         items=[CourseListItem.model_validate(course) for course in items],
         total=total,

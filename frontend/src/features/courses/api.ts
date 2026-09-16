@@ -27,6 +27,11 @@ export const coursesApi = {
       .get<PaginatedCourses>('/admin/courses/pending', { params: toQueryParams(filters) })
       .then((res) => res.data),
 
+  listAll: (filters: CourseFilters = {}) =>
+    apiClient
+      .get<PaginatedCourses>('/admin/courses', { params: toQueryParams(filters) })
+      .then((res) => res.data),
+
   getById: (id: string) => apiClient.get<Course>(`/courses/${id}`).then((res) => res.data),
 
   create: (payload: CreateCoursePayload) =>

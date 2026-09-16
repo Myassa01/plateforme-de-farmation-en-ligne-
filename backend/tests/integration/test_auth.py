@@ -5,12 +5,12 @@ def test_register_creates_user(client):
             "email": "alice@example.com",
             "full_name": "Alice Doe",
             "password": "SecurePass123",
-            "role": "student",
         },
     )
     assert response.status_code == 201
     data = response.json()
     assert data["email"] == "alice@example.com"
+    assert data["role"] == "student"
     assert "hashed_password" not in data
 
 
@@ -19,7 +19,6 @@ def test_register_duplicate_email_fails(client):
         "email": "bob@example.com",
         "full_name": "Bob Doe",
         "password": "SecurePass123",
-        "role": "student",
     }
     client.post("/auth/register", json=payload)
     response = client.post("/auth/register", json=payload)
@@ -33,7 +32,6 @@ def test_login_returns_tokens(client):
             "email": "carol@example.com",
             "full_name": "Carol Doe",
             "password": "SecurePass123",
-            "role": "student",
         },
     )
     response = client.post(
@@ -53,7 +51,6 @@ def test_login_wrong_password_fails(client):
             "email": "dave@example.com",
             "full_name": "Dave Doe",
             "password": "SecurePass123",
-            "role": "student",
         },
     )
     response = client.post(
@@ -75,7 +72,6 @@ def test_get_me_with_valid_token(client):
             "email": "erin@example.com",
             "full_name": "Erin Doe",
             "password": "SecurePass123",
-            "role": "instructor",
         },
     )
     login_response = client.post(
@@ -87,7 +83,7 @@ def test_get_me_with_valid_token(client):
     response = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json()["email"] == "erin@example.com"
-    assert response.json()["role"] == "instructor"
+    assert response.json()["role"] == "student"
 
 
 def test_refresh_token_flow(client):
@@ -97,7 +93,6 @@ def test_refresh_token_flow(client):
             "email": "frank@example.com",
             "full_name": "Frank Doe",
             "password": "SecurePass123",
-            "role": "student",
         },
     )
     login_response = client.post(

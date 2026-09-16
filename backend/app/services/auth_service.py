@@ -11,7 +11,7 @@ from app.core.security import (
 )
 from app.core.security import TokenType
 from app.exceptions.base import ConflictError, UnauthorizedError
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import TokenPair
 from app.schemas.user import UserLogin, UserRegister
@@ -30,7 +30,7 @@ class AuthService:
             email=payload.email,
             full_name=payload.full_name,
             hashed_password=hash_password(payload.password),
-            role=payload.role,
+            role=UserRole.STUDENT,
         )
         return self.user_repo.create(user)
 

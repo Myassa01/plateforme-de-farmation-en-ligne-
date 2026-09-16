@@ -3,7 +3,9 @@ import { AdminLayout } from '@/layouts/AdminLayout'
 import { InstructorLayout } from '@/layouts/InstructorLayout'
 import { StudentLayout } from '@/layouts/StudentLayout'
 import { AdminCoursesPage } from '@/pages/admin/AdminCoursesPage'
+import { AdminCreateCoursePage } from '@/pages/admin/AdminCreateCoursePage'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
+import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { CreateCoursePage } from '@/pages/instructor/CreateCoursePage'
 import { InstructorCoursesPage } from '@/pages/instructor/InstructorCoursesPage'
 import { InstructorDashboardPage } from '@/pages/instructor/InstructorDashboardPage'
@@ -43,7 +45,9 @@ export function AppRouter() {
         <Route element={<RoleRoute allowedRoles={['admin']} />}>
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
             <Route path="/admin/courses" element={<AdminCoursesPage />} />
+            <Route path="/admin/courses/new" element={<AdminCreateCoursePage />} />
           </Route>
         </Route>
       </Route>

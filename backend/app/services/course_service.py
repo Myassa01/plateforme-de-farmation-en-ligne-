@@ -29,6 +29,9 @@ class CourseService:
         filters.status = CourseStatus.PENDING
         return self.repo.list_with_filters(filters)
 
+    def list_all_courses(self, filters: CourseFilters) -> tuple[list[Course], int]:
+        return self.repo.list_with_filters(filters)
+
     def get_course(self, course_id: uuid.UUID) -> Course:
         course = self.repo.get_by_id(course_id)
         if not course:

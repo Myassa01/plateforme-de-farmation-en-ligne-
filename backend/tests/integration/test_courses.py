@@ -1,18 +1,7 @@
 import pytest
 
-
-def _register_and_login(client, email, role="student"):
-    client.post(
-        "/auth/register",
-        json={
-            "email": email,
-            "full_name": "Test User",
-            "password": "SecurePass123",
-            "role": role,
-        },
-    )
-    login = client.post("/auth/login", json={"email": email, "password": "SecurePass123"})
-    return login.json()["access_token"]
+from app.models.user import UserRole
+from tests.conftest import register_and_login
 
 
 def _create_category(client, admin_token):
@@ -25,10 +14,12 @@ def _create_category(client, admin_token):
 
 
 @pytest.fixture
-def setup(client):
-    admin_token = _register_and_login(client, "admin@example.com", role="admin")
-    instructor_token = _register_and_login(client, "instructor@example.com", role="instructor")
-    student_token = _register_and_login(client, "student@example.com", role="student")
+def setup(client, db_session):
+    admin_token = register_and_login(client, db_session, "admin@example.com", role=UserRole.ADMIN)
+    instructor_token = register_and_login(
+        client, db_session, "instructor@example.com", role=UserRole.INSTRUCTOR
+    )
+    student_token = register_and_login(client, db_session, "student@example.com")
     category_id = _create_category(client, admin_token)
     return {
         "admin_token": admin_token,
@@ -121,12 +112,14 @@ def test_reject_course_requires_reason(client, setup):
     assert reject_response.json()["status"] == "rejected"
 
 
-def test_other_instructor_cannot_edit_course(client, setup):
+def test_other_instructor_cannot_edit_course(client, setup, db_session):
     instructor_headers = {"Authorization": f"Bearer {setup['instructor_token']}"}
     create_response = client.post("/courses", json=_course_payload(setup["category_id"]), headers=instructor_headers)
     course_id = create_response.json()["id"]
 
-    other_token = _register_and_login(client, "other_instructor@example.com", role="instructor")
+    other_token = register_and_login(
+        client, db_session, "other_instructor@example.com", role=UserRole.INSTRUCTOR
+    )
     other_headers = {"Authorization": f"Bearer {other_token}"}
 
     response = client.patch(
@@ -157,3 +150,37 @@ def test_search_and_filter_courses(client, setup):
 
     response = client.get("/courses", params={"min_price": "100"})
     assert response.json()["total"] == 0
+
+
+def test_admin_can_create_course(client, setup):
+    admin_headers = {"Authorization": f"Bearer {setup['admin_token']}"}
+    response = client.post("/courses", json=_course_payload(setup["category_id"]), headers=admin_headers)
+    assert response.status_code == 201
+
+
+def test_admin_can_edit_and_delete_any_course(client, setup):
+    instructor_headers = {"Authorization": f"Bearer {setup['instructor_token']}"}
+    admin_headers = {"Authorization": f"Bearer {setup['admin_token']}"}
+
+    create_response = client.post("/courses", json=_course_payload(setup["category_id"]), headers=instructor_headers)
+    course_id = create_response.json()["id"]
+
+    update_response = client.patch(
+        f"/courses/{course_id}", json={"title": "Updated by admin"}, headers=admin_headers
+    )
+    assert update_response.status_code == 200
+    assert update_response.json()["title"] == "Updated by admin"
+
+    delete_response = client.delete(f"/courses/{course_id}", headers=admin_headers)
+    assert delete_response.status_code == 204
+
+
+def test_admin_all_courses_listing_includes_drafts(client, setup):
+    instructor_headers = {"Authorization": f"Bearer {setup['instructor_token']}"}
+    admin_headers = {"Authorization": f"Bearer {setup['admin_token']}"}
+
+    client.post("/courses", json=_course_payload(setup["category_id"]), headers=instructor_headers)
+
+    response = client.get("/admin/courses", headers=admin_headers)
+    assert response.status_code == 200
+    assert response.json()["total"] == 1

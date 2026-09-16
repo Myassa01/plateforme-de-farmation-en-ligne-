@@ -1,15 +1,5 @@
-def _register_and_login(client, email, role="student"):
-    client.post(
-        "/auth/register",
-        json={
-            "email": email,
-            "full_name": "Test User",
-            "password": "SecurePass123",
-            "role": role,
-        },
-    )
-    login = client.post("/auth/login", json={"email": email, "password": "SecurePass123"})
-    return login.json()["access_token"]
+from app.models.user import UserRole
+from tests.conftest import register_and_login
 
 
 def test_list_categories_empty(client):
@@ -18,8 +8,8 @@ def test_list_categories_empty(client):
     assert response.json() == []
 
 
-def test_create_category_requires_admin(client):
-    token = _register_and_login(client, "student1@example.com", role="student")
+def test_create_category_requires_admin(client, db_session):
+    token = register_and_login(client, db_session, "student1@example.com")
     response = client.post(
         "/categories",
         json={"name": "Web Development"},
@@ -28,8 +18,8 @@ def test_create_category_requires_admin(client):
     assert response.status_code == 403
 
 
-def test_admin_can_create_category(client):
-    token = _register_and_login(client, "admin1@example.com", role="admin")
+def test_admin_can_create_category(client, db_session):
+    token = register_and_login(client, db_session, "admin1@example.com", role=UserRole.ADMIN)
     response = client.post(
         "/categories",
         json={"name": "Web Development", "description": "Learn to build websites"},
@@ -41,8 +31,8 @@ def test_admin_can_create_category(client):
     assert data["slug"] == "web-development"
 
 
-def test_create_duplicate_category_fails(client):
-    token = _register_and_login(client, "admin2@example.com", role="admin")
+def test_create_duplicate_category_fails(client, db_session):
+    token = register_and_login(client, db_session, "admin2@example.com", role=UserRole.ADMIN)
     headers = {"Authorization": f"Bearer {token}"}
     client.post("/categories", json={"name": "Design"}, headers=headers)
     response = client.post("/categories", json={"name": "Design"}, headers=headers)
