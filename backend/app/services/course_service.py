@@ -4,10 +4,12 @@ from sqlalchemy.orm import Session
 
 from app.exceptions.base import ConflictError, ForbiddenError, NotFoundError
 from app.models.course import Course, CourseStatus
+from app.models.notification import NotificationType
 from app.models.user import User, UserRole
 from app.repositories.category_repository import CategoryRepository
 from app.repositories.course_repository import CourseFilters, CourseRepository
 from app.schemas.course import CourseCreate, CourseReject, CourseUpdate
+from app.services.notification_service import NotificationService
 from app.utils.slugify import slugify
 
 
@@ -16,6 +18,7 @@ class CourseService:
         self.db = db
         self.repo = CourseRepository(db)
         self.category_repo = CategoryRepository(db)
+        self.notification_service = NotificationService(db)
 
     def list_public_courses(self, filters: CourseFilters) -> tuple[list[Course], int]:
         filters.status = CourseStatus.PUBLISHED
@@ -109,7 +112,16 @@ class CourseService:
 
         course.status = CourseStatus.PUBLISHED
         course.rejection_reason = None
-        return self.repo.update(course)
+        updated = self.repo.update(course)
+
+        self.notification_service.notify(
+            user_id=updated.instructor_id,
+            notif_type=NotificationType.COURSE_APPROVED,
+            title="Formation approuvée",
+            message=f"Votre formation \"{updated.title}\" a été approuvée et est maintenant publiée.",
+            related_entity_id=updated.id,
+        )
+        return updated
 
     def reject_course(self, course_id: uuid.UUID, payload: CourseReject) -> Course:
         course = self.get_course(course_id)
@@ -118,7 +130,16 @@ class CourseService:
 
         course.status = CourseStatus.REJECTED
         course.rejection_reason = payload.reason
-        return self.repo.update(course)
+        updated = self.repo.update(course)
+
+        self.notification_service.notify(
+            user_id=updated.instructor_id,
+            notif_type=NotificationType.COURSE_REJECTED,
+            title="Formation rejetée",
+            message=f"Votre formation \"{updated.title}\" a été rejetée. Raison : {payload.reason}",
+            related_entity_id=updated.id,
+        )
+        return updated
 
     def _ensure_can_manage(self, course: Course, current_user: User) -> None:
         is_owner = current_user.id == course.instructor_id

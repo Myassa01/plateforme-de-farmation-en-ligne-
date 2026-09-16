@@ -1,16 +1,39 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
 import { useCourse } from '@/features/courses/hooks/useCourse'
 import { formatPrice, levelLabels } from '@/features/courses/utils'
+import { useEnroll } from '@/features/enrollments/hooks'
+import { useAddToWishlist } from '@/features/wishlist/hooks'
 import { useAuth } from '@/hooks/useAuth'
 
 export function CourseDetailsPage() {
   const { courseId } = useParams<{ courseId: string }>()
   const { data: course, isLoading, isError } = useCourse(courseId)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
+  const enroll = useEnroll()
+  const addToWishlist = useAddToWishlist()
+
+  const isStudent = user?.role === 'student'
+
+  const handleEnroll = () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+    if (courseId) enroll.mutate(courseId)
+  }
+
+  const handleAddToWishlist = () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+    if (courseId) addToWishlist.mutate(courseId)
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -56,8 +79,33 @@ export function CourseDetailsPage() {
               <span className="text-2xl font-bold text-slate-900">
                 {formatPrice(course.price)}
               </span>
-              <Button variant="primary">S'inscrire</Button>
+              <div className="flex items-center gap-2">
+                {(isStudent || !isAuthenticated) && (
+                  <Button
+                    variant="secondary"
+                    isLoading={addToWishlist.isPending}
+                    onClick={handleAddToWishlist}
+                  >
+                    Ajouter aux favoris
+                  </Button>
+                )}
+                {(isStudent || !isAuthenticated) && (
+                  <Button variant="primary" isLoading={enroll.isPending} onClick={handleEnroll}>
+                    S'inscrire
+                  </Button>
+                )}
+              </div>
             </div>
+
+            {enroll.isSuccess && (
+              <p className="mt-4 text-sm text-green-600">
+                Inscription réussie ! Retrouvez cette formation dans "Mes formations".
+              </p>
+            )}
+            {enroll.isError && <p className="mt-4 text-sm text-red-600">{enroll.error.message}</p>}
+            {addToWishlist.isSuccess && (
+              <p className="mt-4 text-sm text-green-600">Ajouté à vos favoris.</p>
+            )}
           </div>
         )}
       </div>
