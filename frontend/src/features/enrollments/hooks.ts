@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { enrollmentsApi } from './api'
 
-export function useMyEnrollments() {
+export function useMyEnrollments(enabled = true) {
   return useQuery({
     queryKey: ['my-enrollments'],
     queryFn: enrollmentsApi.listMine,
+    enabled,
   })
 }
 

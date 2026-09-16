@@ -9,8 +9,10 @@ from app.routers import (
     auth,
     categories,
     courses,
+    curriculum,
     enrollments,
     notifications,
+    player,
     users,
     wishlist,
 )
@@ -39,6 +41,8 @@ app.include_router(courses.router)
 app.include_router(enrollments.router)
 app.include_router(wishlist.router)
 app.include_router(notifications.router)
+app.include_router(curriculum.router)
+app.include_router(player.router)
 
 
 @app.get("/health", tags=["health"])

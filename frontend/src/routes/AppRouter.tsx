@@ -6,6 +6,7 @@ import { AdminCoursesPage } from '@/pages/admin/AdminCoursesPage'
 import { AdminCreateCoursePage } from '@/pages/admin/AdminCreateCoursePage'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
 import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
+import { CourseCurriculumPage } from '@/pages/instructor/CourseCurriculumPage'
 import { CreateCoursePage } from '@/pages/instructor/CreateCoursePage'
 import { InstructorCoursesPage } from '@/pages/instructor/InstructorCoursesPage'
 import { InstructorDashboardPage } from '@/pages/instructor/InstructorDashboardPage'
@@ -18,6 +19,7 @@ import { NotificationsPage } from '@/pages/shared/NotificationsPage'
 import { ProfilePage } from '@/pages/shared/ProfilePage'
 import { CertificatesPage } from '@/pages/student/CertificatesPage'
 import { MyCoursesPage } from '@/pages/student/MyCoursesPage'
+import { CoursePlayerPage } from '@/pages/student/player/CoursePlayerPage'
 import { StudentCourseDetailsPage } from '@/pages/student/StudentCourseDetailsPage'
 import { StudentCoursesCatalogPage } from '@/pages/student/StudentCoursesCatalogPage'
 import { StudentDashboardPage } from '@/pages/student/StudentDashboardPage'
@@ -39,6 +41,7 @@ export function AppRouter() {
           <Route element={<StudentLayout />}>
             <Route path="/student" element={<StudentDashboardPage />} />
             <Route path="/student/courses" element={<MyCoursesPage />} />
+            <Route path="/student/courses/:courseId/player" element={<CoursePlayerPage />} />
             <Route path="/student/discover" element={<StudentCoursesCatalogPage />} />
             <Route path="/student/discover/:courseId" element={<StudentCourseDetailsPage />} />
             <Route path="/student/certificates" element={<CertificatesPage />} />
@@ -53,6 +56,7 @@ export function AppRouter() {
             <Route path="/instructor" element={<InstructorDashboardPage />} />
             <Route path="/instructor/courses" element={<InstructorCoursesPage />} />
             <Route path="/instructor/courses/new" element={<CreateCoursePage />} />
+            <Route path="/instructor/courses/:courseId/curriculum" element={<CourseCurriculumPage />} />
             <Route path="/instructor/notifications" element={<NotificationsPage />} />
             <Route path="/instructor/profile" element={<ProfilePage />} />
           </Route>

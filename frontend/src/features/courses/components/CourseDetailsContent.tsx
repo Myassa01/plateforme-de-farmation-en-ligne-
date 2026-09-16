@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/Skeleton'
 import { useCourse } from '@/features/courses/hooks/useCourse'
 import { formatPrice, levelLabels } from '@/features/courses/utils'
 import { useEnroll } from '@/features/enrollments/hooks'
+import { useMyEnrollments } from '@/features/enrollments/hooks'
 import { useAddToWishlist } from '@/features/wishlist/hooks'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -16,8 +17,9 @@ export function CourseDetailsContent() {
   const navigate = useNavigate()
   const enroll = useEnroll()
   const addToWishlist = useAddToWishlist()
-
   const isStudent = user?.role === 'student'
+  const { data: myEnrollments } = useMyEnrollments(isStudent)
+  const isEnrolled = myEnrollments?.some((enrollment) => enrollment.course.id === courseId) ?? false
 
   const handleEnroll = () => {
     if (!isAuthenticated) {
@@ -68,19 +70,27 @@ export function CourseDetailsContent() {
       <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-6">
         <span className="text-2xl font-bold text-slate-900">{formatPrice(course.price)}</span>
         <div className="flex items-center gap-2">
-          {(isStudent || !isAuthenticated) && (
-            <Button
-              variant="secondary"
-              isLoading={addToWishlist.isPending}
-              onClick={handleAddToWishlist}
-            >
-              Ajouter aux favoris
-            </Button>
-          )}
-          {(isStudent || !isAuthenticated) && (
-            <Button variant="primary" isLoading={enroll.isPending} onClick={handleEnroll}>
-              S'inscrire
-            </Button>
+          {isStudent && isEnrolled ? (
+            <Link to={`/student/courses/${course.id}/player`}>
+              <Button variant="primary">Continuer la formation</Button>
+            </Link>
+          ) : (
+            <>
+              {(isStudent || !isAuthenticated) && (
+                <Button
+                  variant="secondary"
+                  isLoading={addToWishlist.isPending}
+                  onClick={handleAddToWishlist}
+                >
+                  Ajouter aux favoris
+                </Button>
+              )}
+              {(isStudent || !isAuthenticated) && (
+                <Button variant="primary" isLoading={enroll.isPending} onClick={handleEnroll}>
+                  S'inscrire
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

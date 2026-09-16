@@ -33,3 +33,8 @@ class EnrollmentRepository:
         self.db.commit()
         self.db.refresh(enrollment)
         return enrollment
+
+    def update(self, enrollment: Enrollment) -> Enrollment:
+        self.db.commit()
+        self.db.refresh(enrollment)
+        return enrollment

@@ -7,7 +7,17 @@ from app.core.config import settings
 from app.database.base import Base
 
 # Import all models so Base.metadata is aware of them for autogenerate.
-from app.models import category, course, enrollment, notification, user, wishlist  # noqa: F401
+from app.models import (  # noqa: F401
+    category,
+    course,
+    enrollment,
+    lesson,
+    lesson_progress,
+    notification,
+    section,
+    user,
+    wishlist,
+)
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)

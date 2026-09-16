@@ -14,6 +14,7 @@ from app.database.types import GUID
 
 if TYPE_CHECKING:
     from app.models.category import Category
+    from app.models.section import Section
     from app.models.user import User
 
 
@@ -66,3 +67,6 @@ class Course(Base):
 
     instructor: Mapped["User"] = relationship(lazy="joined")
     category: Mapped["Category"] = relationship(lazy="joined")
+    sections: Mapped[list["Section"]] = relationship(
+        order_by="Section.order_index", cascade="all, delete-orphan"
+    )

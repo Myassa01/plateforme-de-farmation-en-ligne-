@@ -51,6 +51,9 @@ export function InstructorCoursesPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
+                  <Link to={`/instructor/courses/${course.id}/curriculum`}>
+                    <Button variant="secondary">Curriculum</Button>
+                  </Link>
                   {course.status === 'draft' && (
                     <Button
                       variant="secondary"

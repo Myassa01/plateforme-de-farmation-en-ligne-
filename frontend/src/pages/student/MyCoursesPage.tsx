@@ -32,7 +32,7 @@ export function MyCoursesPage() {
             {data.map((enrollment) => (
               <Link
                 key={enrollment.id}
-                to={`/student/discover/${enrollment.course.id}`}
+                to={`/student/courses/${enrollment.course.id}/player`}
                 className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 hover:shadow-md"
               >
                 <div>
