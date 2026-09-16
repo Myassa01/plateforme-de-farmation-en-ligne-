@@ -11,8 +11,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: async (tokens) => {
-      useAuthStore.getState().setAccessToken(tokens.access_token)
-      const user = await authApi.getMe()
+      const user = await authApi.getMe(tokens.access_token)
       setSession(tokens.access_token, tokens.refresh_token, user)
       navigate(dashboardPathForRole(user.role))
     },

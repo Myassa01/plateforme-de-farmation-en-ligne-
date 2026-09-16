@@ -9,5 +9,8 @@ export const authApi = {
   login: (payload: LoginPayload) =>
     apiClient.post<TokenPair>('/auth/login', payload).then((res) => res.data),
 
-  getMe: () => apiClient.get<User>('/auth/me').then((res) => res.data),
+  getMe: (accessToken?: string) =>
+    apiClient
+      .get<User>('/auth/me', accessToken ? { headers: { Authorization: `Bearer ${accessToken}` } } : undefined)
+      .then((res) => res.data),
 }
