@@ -7,6 +7,7 @@ import { useCourse } from '@/features/courses/hooks/useCourse'
 import { formatPrice, levelLabels } from '@/features/courses/utils'
 import { useEnroll } from '@/features/enrollments/hooks'
 import { useMyEnrollments } from '@/features/enrollments/hooks'
+import { CourseReviews } from '@/features/reviews/components/CourseReviews'
 import { useAddToWishlist } from '@/features/wishlist/hooks'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -104,6 +105,8 @@ export function CourseDetailsContent() {
       {addToWishlist.isSuccess && (
         <p className="mt-4 text-sm text-green-600">Ajouté à vos favoris.</p>
       )}
+
+      <CourseReviews courseId={course.id} />
     </div>
   )
 }
