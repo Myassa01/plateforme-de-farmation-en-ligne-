@@ -1,5 +1,6 @@
 import uuid
 
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.exceptions.base import ForbiddenError, NotFoundError
@@ -12,6 +13,7 @@ from app.repositories.lesson_repository import LessonRepository
 from app.repositories.section_repository import SectionRepository
 from app.schemas.lesson import LessonCreate, LessonUpdate
 from app.schemas.section import SectionCreate, SectionUpdate
+from app.storage.local_storage import storage_service
 
 
 class CurriculumService:
@@ -80,6 +82,14 @@ class CurriculumService:
         section = self._get_section(lesson.section_id)
         self._get_owned_course(section.course_id, current_user)
         self.lesson_repo.delete(lesson)
+
+    def upload_lesson_video(self, lesson_id: uuid.UUID, current_user: User, file: UploadFile) -> Lesson:
+        lesson = self._get_lesson(lesson_id)
+        section = self._get_section(lesson.section_id)
+        self._get_owned_course(section.course_id, current_user)
+
+        lesson.video_url = storage_service.save_video(file)
+        return self.lesson_repo.update(lesson)
 
     def _get_section(self, section_id: uuid.UUID) -> Section:
         section = self.section_repo.get_by_id(section_id)
