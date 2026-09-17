@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
@@ -15,8 +16,14 @@ interface CourseCatalogProps {
 }
 
 export function CourseCatalog({ linkBasePath }: CourseCatalogProps = {}) {
-  const [filters, setFilters] = useState<CourseFilters>({ page: 1, page_size: 12 })
-  const [searchInput, setSearchInput] = useState('')
+  const [searchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+  const [filters, setFilters] = useState<CourseFilters>({
+    page: 1,
+    page_size: 12,
+    search: initialSearch || undefined,
+  })
+  const [searchInput, setSearchInput] = useState(initialSearch)
 
   const { data: categories } = useCategories()
   const { data, isLoading, isError } = useCourses(filters)
