@@ -1,14 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/Button'
-import { useAuth } from '@/hooks/useAuth'
 
 interface PublicNavbarProps {
   initialSearch?: string
 }
 
 export function PublicNavbar({ initialSearch = '' }: PublicNavbarProps) {
-  const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [search, setSearch] = useState(initialSearch)
 
@@ -42,20 +40,12 @@ export function PublicNavbar({ initialSearch = '' }: PublicNavbarProps) {
       </form>
 
       <div className="ml-auto flex shrink-0 items-center gap-3">
-        {isAuthenticated ? (
-          <Link to="/student">
-            <Button variant="secondary">Mon tableau de bord</Button>
-          </Link>
-        ) : (
-          <>
-            <Link to="/login">
-              <Button variant="ghost">Se connecter</Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="primary">S'inscrire</Button>
-            </Link>
-          </>
-        )}
+        <Link to="/login">
+          <Button variant="ghost">Se connecter</Button>
+        </Link>
+        <Link to="/register">
+          <Button variant="primary">S'inscrire</Button>
+        </Link>
       </div>
     </nav>
   )
