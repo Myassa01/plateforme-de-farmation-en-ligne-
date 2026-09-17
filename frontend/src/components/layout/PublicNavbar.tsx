@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/Button'
 import { DiscoverMenu } from './DiscoverMenu'
@@ -10,6 +10,10 @@ interface PublicNavbarProps {
 export function PublicNavbar({ initialSearch = '' }: PublicNavbarProps) {
   const navigate = useNavigate()
   const [search, setSearch] = useState(initialSearch)
+
+  useEffect(() => {
+    setSearch(initialSearch)
+  }, [initialSearch])
 
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault()

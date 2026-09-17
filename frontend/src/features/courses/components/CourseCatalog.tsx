@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { EmptyState } from '@/components/EmptyState'
@@ -17,41 +17,29 @@ interface CourseCatalogProps {
 
 export function CourseCatalog({ linkBasePath }: CourseCatalogProps = {}) {
   const [searchParams] = useSearchParams()
-  const initialSearch = searchParams.get('search') ?? ''
-  const initialCategoryId = searchParams.get('category_id') ?? undefined
+  const search = searchParams.get('search') ?? undefined
+  const categoryIdFromUrl = searchParams.get('category_id') ?? undefined
   const [filters, setFilters] = useState<CourseFilters>({
     page: 1,
     page_size: 12,
-    search: initialSearch || undefined,
-    category_id: initialCategoryId,
+    search,
+    category_id: categoryIdFromUrl,
   })
-  const [searchInput, setSearchInput] = useState(initialSearch)
 
   const { data: categories } = useCategories()
   const { data, isLoading, isError } = useCourses(filters)
 
-  const handleSearchSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
-    setFilters((prev) => ({ ...prev, search: searchInput || undefined, page: 1 }))
-  }
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, search, page: 1 }))
+  }, [search])
 
   return (
     <div>
-      <form onSubmit={handleSearchSubmit} className="flex gap-2">
-        <input
-          type="search"
-          value={searchInput}
-          onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Rechercher une formation..."
-          className="w-full max-w-md rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-        />
-        <button
-          type="submit"
-          className="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
-        >
-          Rechercher
-        </button>
-      </form>
+      {search && (
+        <p className="text-sm text-slate-600">
+          Résultats pour <span className="font-medium text-slate-900">"{search}"</span>
+        </p>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
