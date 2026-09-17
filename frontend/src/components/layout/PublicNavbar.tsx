@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/Button'
+import { DiscoverMenu } from './DiscoverMenu'
 
 interface PublicNavbarProps {
   initialSearch?: string
@@ -22,12 +23,9 @@ export function PublicNavbar({ initialSearch = '' }: PublicNavbarProps) {
         LearnHub
       </Link>
 
-      <Link
-        to="/courses"
-        className="hidden shrink-0 text-sm font-medium text-slate-700 hover:text-brand-600 sm:block"
-      >
-        Formations
-      </Link>
+      <div className="hidden sm:block">
+        <DiscoverMenu />
+      </div>
 
       <form onSubmit={handleSearchSubmit} className="order-last w-full sm:order-none sm:max-w-md sm:flex-1">
         <input

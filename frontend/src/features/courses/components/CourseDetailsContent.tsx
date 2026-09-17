@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -5,8 +6,8 @@ import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
 import { useCourse } from '@/features/courses/hooks/useCourse'
 import { formatPrice, levelLabels } from '@/features/courses/utils'
-import { useEnroll } from '@/features/enrollments/hooks'
 import { useMyEnrollments } from '@/features/enrollments/hooks'
+import { PaymentModal } from '@/features/payment/components/PaymentModal'
 import { CourseReviews } from '@/features/reviews/components/CourseReviews'
 import { useAddToWishlist } from '@/features/wishlist/hooks'
 import { useAuth } from '@/hooks/useAuth'
@@ -16,18 +17,20 @@ export function CourseDetailsContent() {
   const { data: course, isLoading, isError } = useCourse(courseId)
   const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
-  const enroll = useEnroll()
   const addToWishlist = useAddToWishlist()
   const isStudent = user?.role === 'student'
   const { data: myEnrollments } = useMyEnrollments(isStudent)
   const isEnrolled = myEnrollments?.some((enrollment) => enrollment.course.id === courseId) ?? false
 
-  const handleEnroll = () => {
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false)
+  const [justPaid, setJustPaid] = useState(false)
+
+  const handleOpenPayment = () => {
     if (!isAuthenticated) {
       navigate('/login')
       return
     }
-    if (courseId) enroll.mutate(courseId)
+    setIsPaymentOpen(true)
   }
 
   const handleAddToWishlist = () => {
@@ -87,8 +90,8 @@ export function CourseDetailsContent() {
                 </Button>
               )}
               {(isStudent || !isAuthenticated) && (
-                <Button variant="primary" isLoading={enroll.isPending} onClick={handleEnroll}>
-                  S'inscrire
+                <Button variant="primary" onClick={handleOpenPayment}>
+                  {Number(course.price) === 0 ? "S'inscrire" : 'Acheter'}
                 </Button>
               )}
             </>
@@ -96,17 +99,29 @@ export function CourseDetailsContent() {
         </div>
       </div>
 
-      {enroll.isSuccess && (
+      {justPaid && (
         <p className="mt-4 text-sm text-green-600">
           Inscription réussie ! Retrouvez cette formation dans "Mes formations".
         </p>
       )}
-      {enroll.isError && <p className="mt-4 text-sm text-red-600">{enroll.error.message}</p>}
       {addToWishlist.isSuccess && (
         <p className="mt-4 text-sm text-green-600">Ajouté à vos favoris.</p>
       )}
 
       <CourseReviews courseId={course.id} />
+
+      {isPaymentOpen && (
+        <PaymentModal
+          courseId={course.id}
+          courseTitle={course.title}
+          price={course.price}
+          onClose={() => setIsPaymentOpen(false)}
+          onSuccess={() => {
+            setIsPaymentOpen(false)
+            setJustPaid(true)
+          }}
+        />
+      )}
     </div>
   )
 }

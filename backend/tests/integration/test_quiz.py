@@ -43,7 +43,7 @@ def setup(client, db_session):
 
     client.post(f"/courses/{course_id}/submit", headers=instructor_headers)
     client.post(f"/courses/{course_id}/approve", headers=admin_headers)
-    client.post(f"/courses/{course_id}/enroll", headers=student_headers)
+    client.post(f"/courses/{course_id}/pay", headers=student_headers)
 
     return {
         "instructor_headers": instructor_headers,

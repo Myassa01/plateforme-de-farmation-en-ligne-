@@ -47,7 +47,7 @@ def setup(client, db_session):
     client.post(f"/courses/{course_id}/approve", headers={"Authorization": f"Bearer {admin_token}"})
 
     student_headers = {"Authorization": f"Bearer {student_token}"}
-    client.post(f"/courses/{course_id}/enroll", headers=student_headers)
+    client.post(f"/courses/{course_id}/pay", headers=student_headers)
 
     return {
         "course_id": course_id,

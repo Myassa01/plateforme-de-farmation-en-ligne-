@@ -140,7 +140,7 @@ def test_curriculum_shows_full_video_to_enrolled_student(client, setup):
     client.post(f"/courses/{setup['course_id']}/approve", headers=admin_headers)
 
     student_headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
+    client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
 
     response = client.get(f"/courses/{setup['course_id']}/curriculum", headers=student_headers)
     lessons = response.json()[0]["lessons"]

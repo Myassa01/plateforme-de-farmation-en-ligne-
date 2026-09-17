@@ -54,7 +54,7 @@ def test_cannot_review_without_enrollment(client, setup):
 
 
 def test_enrolled_student_can_review(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
 
     response = client.post(
         f"/courses/{setup['course_id']}/reviews",
@@ -69,7 +69,7 @@ def test_enrolled_student_can_review(client, setup):
 
 
 def test_cannot_review_twice(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 4},
@@ -84,7 +84,7 @@ def test_cannot_review_twice(client, setup):
 
 
 def test_rating_summary_calculates_average(client, setup, db_session):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 4},
@@ -93,7 +93,7 @@ def test_rating_summary_calculates_average(client, setup, db_session):
 
     other_token = register_and_login(client, db_session, "other_student@example.com")
     other_headers = {"Authorization": f"Bearer {other_token}"}
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=other_headers)
+    client.post(f"/courses/{setup['course_id']}/pay", headers=other_headers)
     client.post(
         f"/courses/{setup['course_id']}/reviews", json={"rating": 2}, headers=other_headers
     )
@@ -105,7 +105,7 @@ def test_rating_summary_calculates_average(client, setup, db_session):
 
 
 def test_rating_out_of_bounds_rejected(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     response = client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 6},
@@ -115,7 +115,7 @@ def test_rating_out_of_bounds_rejected(client, setup):
 
 
 def test_student_can_update_own_review(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     review_id = client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 3},
@@ -130,7 +130,7 @@ def test_student_can_update_own_review(client, setup):
 
 
 def test_student_cannot_update_others_review(client, setup, db_session):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     review_id = client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 3},
@@ -147,7 +147,7 @@ def test_student_cannot_update_others_review(client, setup, db_session):
 
 
 def test_student_can_delete_own_review(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     review_id = client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 3},
@@ -162,7 +162,7 @@ def test_student_can_delete_own_review(client, setup):
 
 
 def test_reviews_are_publicly_listable(client, setup):
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=setup["student_headers"])
+    client.post(f"/courses/{setup['course_id']}/pay", headers=setup["student_headers"])
     client.post(
         f"/courses/{setup['course_id']}/reviews",
         json={"rating": 5, "comment": "Excellent"},

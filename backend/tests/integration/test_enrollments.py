@@ -38,33 +38,38 @@ def setup(client, db_session):
     }
 
 
-def test_cannot_enroll_in_unpublished_course(client, setup):
+def test_cannot_pay_for_unpublished_course(client, setup):
     headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    response = client.post(f"/courses/{setup['course_id']}/enroll", headers=headers)
+    response = client.post(f"/courses/{setup['course_id']}/pay", headers=headers)
     assert response.status_code == 404
 
 
-def test_enroll_in_published_course(client, setup):
+def test_pay_enrolls_in_published_course(client, setup):
     instructor_headers = {"Authorization": f"Bearer {setup['instructor_token']}"}
     admin_headers = {"Authorization": f"Bearer {setup['admin_token']}"}
     client.post(f"/courses/{setup['course_id']}/submit", headers=instructor_headers)
     client.post(f"/courses/{setup['course_id']}/approve", headers=admin_headers)
 
     student_headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    response = client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
+    response = client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
     assert response.status_code == 201
-    assert response.json()["course"]["id"] == setup["course_id"]
+    data = response.json()
+    assert data["course_id"] == setup["course_id"]
+    assert data["status"] == "succeeded"
+
+    my_courses = client.get("/my-courses", headers=student_headers).json()
+    assert my_courses[0]["course"]["id"] == setup["course_id"]
 
 
-def test_cannot_enroll_twice(client, setup):
+def test_cannot_pay_twice(client, setup):
     instructor_headers = {"Authorization": f"Bearer {setup['instructor_token']}"}
     admin_headers = {"Authorization": f"Bearer {setup['admin_token']}"}
     client.post(f"/courses/{setup['course_id']}/submit", headers=instructor_headers)
     client.post(f"/courses/{setup['course_id']}/approve", headers=admin_headers)
 
     student_headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
-    response = client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
+    client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
+    response = client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
     assert response.status_code == 409
 
 
@@ -75,7 +80,7 @@ def test_my_courses_lists_enrollments(client, setup):
     client.post(f"/courses/{setup['course_id']}/approve", headers=admin_headers)
 
     student_headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
+    client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
 
     response = client.get("/my-courses", headers=student_headers)
     assert response.status_code == 200
@@ -89,7 +94,7 @@ def test_instructor_gets_notification_on_enrollment(client, setup):
     client.post(f"/courses/{setup['course_id']}/approve", headers=admin_headers)
 
     student_headers = {"Authorization": f"Bearer {setup['student_token']}"}
-    client.post(f"/courses/{setup['course_id']}/enroll", headers=student_headers)
+    client.post(f"/courses/{setup['course_id']}/pay", headers=student_headers)
 
     response = client.get("/notifications", headers=instructor_headers)
     notifications = response.json()

@@ -18,10 +18,12 @@ interface CourseCatalogProps {
 export function CourseCatalog({ linkBasePath }: CourseCatalogProps = {}) {
   const [searchParams] = useSearchParams()
   const initialSearch = searchParams.get('search') ?? ''
+  const initialCategoryId = searchParams.get('category_id') ?? undefined
   const [filters, setFilters] = useState<CourseFilters>({
     page: 1,
     page_size: 12,
     search: initialSearch || undefined,
+    category_id: initialCategoryId,
   })
   const [searchInput, setSearchInput] = useState(initialSearch)
 

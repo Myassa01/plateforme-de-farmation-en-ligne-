@@ -17,6 +17,7 @@ from app.models import (  # noqa: F401
     lesson_progress,
     notification,
     password_reset_token,
+    payment,
     question,
     quiz,
     quiz_attempt,
