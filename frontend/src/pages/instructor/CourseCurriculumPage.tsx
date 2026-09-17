@@ -10,6 +10,7 @@ import {
   useDeleteLesson,
   useDeleteSection,
 } from '@/features/curriculum/hooks'
+import { LessonVideoUploader } from '@/features/curriculum/components/LessonVideoUploader'
 import { QuizBuilderPanel } from '@/features/quiz/components/QuizBuilderPanel'
 
 export function CourseCurriculumPage() {
@@ -22,7 +23,7 @@ export function CourseCurriculumPage() {
 
   const [newSectionTitle, setNewSectionTitle] = useState('')
   const [lessonDrafts, setLessonDrafts] = useState<
-    Record<string, { title: string; videoUrl: string; isPreview: boolean }>
+    Record<string, { title: string; isPreview: boolean }>
   >({})
   const [addingLessonTo, setAddingLessonTo] = useState<string | null>(null)
   const [expandedQuizLessonId, setExpandedQuizLessonId] = useState<string | null>(null)
@@ -47,7 +48,6 @@ export function CourseCurriculumPage() {
         sectionId,
         payload: {
           title,
-          video_url: draft.videoUrl.trim() || undefined,
           is_preview: draft.isPreview,
         },
       },
@@ -55,7 +55,7 @@ export function CourseCurriculumPage() {
         onSuccess: () => {
           setLessonDrafts((prev) => ({
             ...prev,
-            [sectionId]: { title: '', videoUrl: '', isPreview: false },
+            [sectionId]: { title: '', isPreview: false },
           }))
           setAddingLessonTo(null)
         },
@@ -132,6 +132,12 @@ export function CourseCurriculumPage() {
                         </div>
                       </div>
 
+                      <LessonVideoUploader
+                        courseId={courseId}
+                        lessonId={lesson.id}
+                        hasVideo={Boolean(lesson.video_url)}
+                      />
+
                       {expandedQuizLessonId === lesson.id && (
                         <QuizBuilderPanel
                           courseId={courseId}
@@ -153,7 +159,6 @@ export function CourseCurriculumPage() {
                           ...prev,
                           [section.id]: {
                             title: event.target.value,
-                            videoUrl: prev[section.id]?.videoUrl ?? '',
                             isPreview: prev[section.id]?.isPreview ?? false,
                           },
                         }))
@@ -161,22 +166,10 @@ export function CourseCurriculumPage() {
                       placeholder="Titre de la lesson"
                       className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
                     />
-                    <input
-                      type="url"
-                      value={lessonDrafts[section.id]?.videoUrl ?? ''}
-                      onChange={(event) =>
-                        setLessonDrafts((prev) => ({
-                          ...prev,
-                          [section.id]: {
-                            title: prev[section.id]?.title ?? '',
-                            videoUrl: event.target.value,
-                            isPreview: prev[section.id]?.isPreview ?? false,
-                          },
-                        }))
-                      }
-                      placeholder="URL directe d'un fichier vidéo (.mp4, .webm)"
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
-                    />
+                    <p className="text-xs text-slate-500">
+                      Vous pourrez importer la vidéo depuis votre ordinateur une fois la lesson
+                      créée.
+                    </p>
                     <label className="flex items-center gap-2 text-sm text-slate-600">
                       <input
                         type="checkbox"
@@ -186,7 +179,6 @@ export function CourseCurriculumPage() {
                             ...prev,
                             [section.id]: {
                               title: prev[section.id]?.title ?? '',
-                              videoUrl: prev[section.id]?.videoUrl ?? '',
                               isPreview: event.target.checked,
                             },
                           }))

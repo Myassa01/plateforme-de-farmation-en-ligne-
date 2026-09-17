@@ -30,4 +30,18 @@ export const curriculumApi = {
     apiClient.post<Lesson>(`/sections/${sectionId}/lessons`, payload).then((res) => res.data),
 
   deleteLesson: (lessonId: string) => apiClient.delete(`/lessons/${lessonId}`),
+
+  uploadVideo: (lessonId: string, file: File, onProgress?: (percent: number) => void) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return apiClient
+      .post<Lesson>(`/lessons/${lessonId}/video`, formData, {
+        onUploadProgress: (event) => {
+          if (onProgress && event.total) {
+            onProgress(Math.round((event.loaded / event.total) * 100))
+          }
+        },
+      })
+      .then((res) => res.data)
+  },
 }

@@ -82,3 +82,13 @@ def delete_lesson(
     current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
 ):
     CurriculumService(db).delete_lesson(lesson_id, current_user)
+
+
+@router.post("/lessons/{lesson_id}/video", response_model=LessonOut)
+def upload_lesson_video(
+    lesson_id: uuid.UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
+):
+    return CurriculumService(db).upload_lesson_video(lesson_id, current_user, file)

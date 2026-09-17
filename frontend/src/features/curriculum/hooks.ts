@@ -55,3 +55,19 @@ export function useDeleteLesson(courseId: string) {
     onSuccess: () => invalidateCurriculum(queryClient, courseId),
   })
 }
+
+export function useUploadVideo(courseId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      lessonId,
+      file,
+      onProgress,
+    }: {
+      lessonId: string
+      file: File
+      onProgress?: (percent: number) => void
+    }) => curriculumApi.uploadVideo(lessonId, file, onProgress),
+    onSuccess: () => invalidateCurriculum(queryClient, courseId),
+  })
+}

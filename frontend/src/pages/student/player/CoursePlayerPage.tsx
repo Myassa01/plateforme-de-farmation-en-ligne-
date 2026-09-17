@@ -9,6 +9,7 @@ import type { Lesson } from '@/features/curriculum/types'
 import { useCompleteLesson, useCourseProgress } from '@/features/player/hooks'
 import { QuizPlayer } from '@/features/quiz/components/QuizPlayer'
 import { clsx } from '@/utils/clsx'
+import { resolveMediaUrl } from '@/utils/media'
 
 export function CoursePlayerPage() {
   const { courseId } = useParams<{ courseId: string }>()
@@ -66,7 +67,7 @@ export function CoursePlayerPage() {
           {activeLesson?.video_url ? (
             <video
               key={activeLesson.id}
-              src={activeLesson.video_url}
+              src={resolveMediaUrl(activeLesson.video_url) ?? undefined}
               controls
               className="h-full w-full"
             />

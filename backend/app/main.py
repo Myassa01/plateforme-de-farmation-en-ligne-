@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.exceptions.base import AppError
@@ -29,6 +32,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+storage_dir = Path(settings.storage_dir)
+storage_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=str(storage_dir)), name="media")
 
 
 @app.exception_handler(AppError)
