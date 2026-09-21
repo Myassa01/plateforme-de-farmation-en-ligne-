@@ -1,6 +1,6 @@
 # LearnHub
 
-Plateforme de formation en ligne (type Udemy) — projet Full Stack avec React/TypeScript côté client et FastAPI/PostgreSQL côté serveur.
+Plateforme de formation en ligne  — projet Full Stack avec React/TypeScript côté client et FastAPI/PostgreSQL côté serveur.
 
 > **Statut** : Phase 3 terminée — backend (auth, users) et frontend (routing, auth, dashboards par rôle) fonctionnels et connectés. Le catalogue de cours, le lecteur de cours, les quiz, certificats, etc. arrivent en Phase 4.
 
