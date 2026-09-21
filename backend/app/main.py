@@ -11,6 +11,7 @@ from app.routers import (
     admin_users,
     auth,
     categories,
+    certificates,
     courses,
     curriculum,
     enrollments,
@@ -19,6 +20,7 @@ from app.routers import (
     quiz_attempts,
     quiz_builder,
     reviews,
+    stats,
     users,
     wishlist,
 )
@@ -47,6 +49,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(admin_users.router)
 app.include_router(categories.router)
+app.include_router(certificates.router)
 app.include_router(courses.router)
 app.include_router(enrollments.router)
 app.include_router(wishlist.router)
@@ -56,6 +59,7 @@ app.include_router(player.router)
 app.include_router(quiz_builder.router)
 app.include_router(quiz_attempts.router)
 app.include_router(reviews.router)
+app.include_router(stats.router)
 
 
 @app.get("/health", tags=["health"])

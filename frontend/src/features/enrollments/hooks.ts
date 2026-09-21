@@ -8,3 +8,11 @@ export function useMyEnrollments(enabled = true) {
     enabled,
   })
 }
+
+export function useCourseStudents(courseId: string | undefined) {
+  return useQuery({
+    queryKey: ['course-students', courseId],
+    queryFn: () => enrollmentsApi.listForCourse(courseId as string),
+    enabled: Boolean(courseId),
+  })
+}

@@ -48,4 +48,10 @@ export const coursesApi = {
 
   reject: (id: string, reason: string) =>
     apiClient.post<Course>(`/courses/${id}/reject`, { reason }).then((res) => res.data),
+
+  uploadThumbnail: (id: string, file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return apiClient.post<Course>(`/courses/${id}/thumbnail`, formData).then((res) => res.data)
+  },
 }

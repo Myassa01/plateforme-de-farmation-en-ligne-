@@ -12,9 +12,12 @@ import {
 } from '@/features/curriculum/hooks'
 import { LessonVideoUploader } from '@/features/curriculum/components/LessonVideoUploader'
 import { QuizBuilderPanel } from '@/features/quiz/components/QuizBuilderPanel'
+import { CourseThumbnailUploader } from '@/features/courses/components/CourseThumbnailUploader'
+import { useCourse } from '@/features/courses/hooks/useCourse'
 
 export function CourseCurriculumPage() {
   const { courseId } = useParams<{ courseId: string }>()
+  const { data: course } = useCourse(courseId)
   const { data: sections, isLoading } = useCurriculumEditor(courseId)
   const createSection = useCreateSection(courseId ?? '')
   const deleteSection = useDeleteSection(courseId ?? '')
@@ -64,11 +67,17 @@ export function CourseCurriculumPage() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold text-slate-900">Curriculum de la formation</h1>
       <p className="mt-1 text-sm text-slate-600">
         Organisez votre formation en sections, lessons et quiz.
       </p>
+
+      {course && (
+        <div className="mt-6">
+          <CourseThumbnailUploader courseId={courseId} thumbnailUrl={course.thumbnail_url} />
+        </div>
+      )}
 
       <div className="mt-6">
         {isLoading && (

@@ -22,7 +22,6 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name: str | None = Field(default=None, min_length=2, max_length=255)
-    bio: str | None = None
     avatar_url: str | None = None
 
 
@@ -36,7 +35,6 @@ class UserOut(UserBase):
     id: uuid.UUID
     role: UserRole
     avatar_url: str | None
-    bio: str | None
     is_active: bool
     created_at: datetime
 

@@ -48,6 +48,19 @@ export function useRejectCourse() {
   })
 }
 
+export function useUploadThumbnail(courseId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => coursesApi.uploadThumbnail(courseId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['course', courseId] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['all-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['courses'] })
+    },
+  })
+}
+
 export function useDeleteCourse() {
   const queryClient = useQueryClient()
   return useMutation({

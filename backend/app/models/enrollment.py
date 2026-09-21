@@ -11,6 +11,7 @@ from app.database.types import GUID
 
 if TYPE_CHECKING:
     from app.models.course import Course
+    from app.models.user import User
 
 
 class Enrollment(Base):
@@ -24,3 +25,4 @@ class Enrollment(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     course: Mapped["Course"] = relationship(lazy="joined")
+    student: Mapped["User"] = relationship(lazy="joined")

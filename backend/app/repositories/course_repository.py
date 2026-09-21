@@ -5,6 +5,7 @@ from decimal import Decimal
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
+from app.models.category import Category
 from app.models.course import Course, CourseLevel, CourseStatus
 
 
@@ -63,7 +64,11 @@ class CourseRepository:
         if filters.search:
             like_pattern = f"%{filters.search}%"
             stmt = stmt.where(
-                or_(Course.title.ilike(like_pattern), Course.description.ilike(like_pattern))
+                or_(
+                    Course.title.ilike(like_pattern),
+                    Course.description.ilike(like_pattern),
+                    Course.category.has(Category.name.ilike(like_pattern)),
+                )
             )
 
         count_stmt = select(func.count()).select_from(stmt.subquery())

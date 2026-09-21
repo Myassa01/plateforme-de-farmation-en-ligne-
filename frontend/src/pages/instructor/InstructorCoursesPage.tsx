@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -6,10 +7,13 @@ import { Skeleton } from '@/components/Skeleton'
 import { useMyCourses } from '@/features/courses/hooks/useMyCourses'
 import { useSubmitCourse } from '@/features/courses/hooks/useCourseMutations'
 import { formatPrice, statusLabels, statusTones } from '@/features/courses/utils'
+import { CourseStudentsPanel } from '@/features/enrollments/components/CourseStudentsPanel'
+import { resolveMediaUrl } from '@/utils/media'
 
 export function InstructorCoursesPage() {
   const { data, isLoading } = useMyCourses()
   const submitCourse = useSubmitCourse()
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null)
 
   return (
     <div>
@@ -41,29 +45,58 @@ export function InstructorCoursesPage() {
             {data.items.map((course) => (
               <div
                 key={course.id}
-                className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200"
+                className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200"
               >
-                <div>
-                  <p className="font-medium text-slate-900">{course.title}</p>
-                  <p className="text-sm text-slate-500">
-                    {course.category.name} · {formatPrice(course.price)}
-                  </p>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <div className="aspect-square w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                      {course.thumbnail_url ? (
+                        <img
+                          src={resolveMediaUrl(course.thumbnail_url) ?? undefined}
+                          alt={course.title}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                          Pas d'image
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-slate-900">{course.title}</p>
+                      <p className="text-sm text-slate-500">
+                        {course.category.name} · {formatPrice(course.price)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
+                    {course.status === 'published' && (
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setExpandedCourseId(expandedCourseId === course.id ? null : course.id)
+                        }
+                      >
+                        {expandedCourseId === course.id ? 'Masquer les étudiants' : 'Voir les étudiants'}
+                      </Button>
+                    )}
+                    <Link to={`/instructor/courses/${course.id}/curriculum`}>
+                      <Button variant="secondary">Curriculum</Button>
+                    </Link>
+                    {course.status === 'draft' && (
+                      <Button
+                        variant="secondary"
+                        isLoading={submitCourse.isPending}
+                        onClick={() => submitCourse.mutate(course.id)}
+                      >
+                        Soumettre
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
-                  <Link to={`/instructor/courses/${course.id}/curriculum`}>
-                    <Button variant="secondary">Curriculum</Button>
-                  </Link>
-                  {course.status === 'draft' && (
-                    <Button
-                      variant="secondary"
-                      isLoading={submitCourse.isPending}
-                      onClick={() => submitCourse.mutate(course.id)}
-                    >
-                      Soumettre
-                    </Button>
-                  )}
-                </div>
+
+                {expandedCourseId === course.id && <CourseStudentsPanel courseId={course.id} />}
               </div>
             ))}
           </div>

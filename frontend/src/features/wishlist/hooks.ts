@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { wishlistApi } from './api'
 
-export function useWishlist() {
+export function useWishlist(enabled = true) {
   return useQuery({
     queryKey: ['wishlist'],
     queryFn: wishlistApi.list,
+    enabled,
   })
 }
 

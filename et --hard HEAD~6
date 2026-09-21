@@ -1,0 +1,18 @@
+[33m0bd5cd0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Initial commit
+[33m8f1b2e7[m Remove the duplicate search bar on the courses catalog page
+[33m26216ff[m Add a simulated payment flow and a categories dropdown menu
+[33m64262d4[m Remove the "Mon tableau de bord" button from the public navbar
+[33m6c9b455[m Add a shared public navbar with a search bar (Udemy-style layout, LearnHub branding)
+[33mcf82bb4[m Add video URL and preview toggle to the lesson creation form
+[33m443d82b[m Add course reviews: ratings, comments, and an average score
+[33mfa8aa8d[m Add quiz system: builder for instructors, player for students
+[33m40245f1[m Add forgot/reset password flow with email delivery
+[33m0fe519f[m Add the missing Categories admin page, remove other dead sidebar links
+[33mdd3f88e[m Add course curriculum management and a working Course Player
+[33m45970ae[m Keep the dashboard sidebar visible while browsing and enrolling in courses
+[33m340d991[m Add enrollments, wishlist, notifications, and profile pages
+[33m2bf13b8[m Fix false "Session expired" error on login with a stale cached token
+[33m289e50b[m Fix role model: single self-serve student signup, admin manages roles and full course CRUD
+[33mf86fc22[m Phase 4: categories and courses catalog with publish workflow
+[33me8b601b[m Phase 3: frontend foundation with routing, auth, and role dashboards
+[33mea243b1[m Phase 2: backend foundation with FastAPI auth and users

@@ -3,6 +3,7 @@ import { AdminLayout } from '@/layouts/AdminLayout'
 import { InstructorLayout } from '@/layouts/InstructorLayout'
 import { StudentLayout } from '@/layouts/StudentLayout'
 import { AdminCategoriesPage } from '@/pages/admin/AdminCategoriesPage'
+import { AdminCertificatesPage } from '@/pages/admin/AdminCertificatesPage'
 import { AdminCoursesPage } from '@/pages/admin/AdminCoursesPage'
 import { AdminCreateCoursePage } from '@/pages/admin/AdminCreateCoursePage'
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage'
@@ -74,6 +75,7 @@ export function AppRouter() {
             <Route path="/admin/courses" element={<AdminCoursesPage />} />
             <Route path="/admin/courses/new" element={<AdminCreateCoursePage />} />
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+            <Route path="/admin/certificates" element={<AdminCertificatesPage />} />
             <Route path="/admin/profile" element={<ProfilePage />} />
           </Route>
         </Route>

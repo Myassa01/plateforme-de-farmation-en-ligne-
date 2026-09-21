@@ -42,6 +42,29 @@ class ProgressService:
         self._maybe_mark_course_completed(enrollment, course_id)
         return progress
 
+    def save_watch_progress(
+        self, lesson_id: uuid.UUID, student_id: uuid.UUID, watched_seconds: int
+    ) -> LessonProgress:
+        lesson = self.lesson_repo.get_by_id(lesson_id)
+        if not lesson:
+            raise NotFoundError("Lesson not found")
+
+        course_id = lesson.section.course_id
+        enrollment = self.enrollment_repo.get(student_id, course_id)
+        if not enrollment:
+            raise ForbiddenError("You must be enrolled in this course to track progress")
+
+        progress = self.progress_repo.get(enrollment.id, lesson_id)
+        if not progress:
+            progress = LessonProgress(enrollment_id=enrollment.id, lesson_id=lesson_id)
+            progress.watched_seconds = watched_seconds
+            progress = self.progress_repo.create(progress)
+        else:
+            progress.watched_seconds = watched_seconds
+            progress = self.progress_repo.update(progress)
+
+        return progress
+
     def get_course_progress(self, course_id: uuid.UUID, student_id: uuid.UUID) -> CourseProgressOut:
         enrollment = self.enrollment_repo.get(student_id, course_id)
         if not enrollment:
@@ -50,6 +73,11 @@ class ProgressService:
         all_lessons = self.lesson_repo.list_for_course(course_id)
         progress_records = self.progress_repo.list_for_enrollment(enrollment.id)
         completed_ids = [record.lesson_id for record in progress_records if record.is_completed]
+        watched_seconds_by_lesson = {
+            record.lesson_id: record.watched_seconds
+            for record in progress_records
+            if record.watched_seconds > 0
+        }
 
         total = len(all_lessons)
         completed = len(completed_ids)
@@ -61,6 +89,7 @@ class ProgressService:
             completed_lessons=completed,
             percentage=percentage,
             completed_lesson_ids=completed_ids,
+            watched_seconds_by_lesson=watched_seconds_by_lesson,
         )
 
     def _maybe_mark_course_completed(self, enrollment, course_id: uuid.UUID) -> None:

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '@/components/Badge'
 import { Button } from '@/components/Button'
@@ -6,24 +6,49 @@ import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
 import { useCurriculum } from '@/features/curriculum/hooks'
 import type { Lesson } from '@/features/curriculum/types'
-import { useCompleteLesson, useCourseProgress } from '@/features/player/hooks'
+import { useCompleteLesson, useCourseProgress, useSaveWatchProgress } from '@/features/player/hooks'
 import { QuizPlayer } from '@/features/quiz/components/QuizPlayer'
 import { clsx } from '@/utils/clsx'
 import { resolveMediaUrl } from '@/utils/media'
+
+const WATCH_PROGRESS_SAVE_INTERVAL_SECONDS = 5
 
 export function CoursePlayerPage() {
   const { courseId } = useParams<{ courseId: string }>()
   const { data: sections, isLoading } = useCurriculum(courseId)
   const { data: progress } = useCourseProgress(courseId)
   const completeLesson = useCompleteLesson(courseId ?? '')
+  const saveWatchProgress = useSaveWatchProgress()
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const lastSavedSecondRef = useRef(0)
 
   const allLessons = useMemo(() => sections?.flatMap((section) => section.lessons) ?? [], [sections])
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
 
-  if (!courseId) return null
-
   const activeLesson: Lesson | undefined =
     allLessons.find((lesson) => lesson.id === activeLessonId) ?? allLessons[0]
+
+  useEffect(() => {
+    lastSavedSecondRef.current = 0
+  }, [activeLesson?.id])
+
+  if (!courseId) return null
+
+  const handleTimeUpdate = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (!activeLesson) return
+    const currentTime = Math.floor(event.currentTarget.currentTime)
+    if (currentTime - lastSavedSecondRef.current < WATCH_PROGRESS_SAVE_INTERVAL_SECONDS) return
+
+    lastSavedSecondRef.current = currentTime
+    saveWatchProgress.mutate({ lessonId: activeLesson.id, watchedSeconds: currentTime })
+  }
+
+  const handlePause = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (!activeLesson) return
+    const currentTime = Math.floor(event.currentTarget.currentTime)
+    lastSavedSecondRef.current = currentTime
+    saveWatchProgress.mutate({ lessonId: activeLesson.id, watchedSeconds: currentTime })
+  }
 
   const completedIds = new Set(progress?.completed_lesson_ids ?? [])
   const activeIndex = allLessons.findIndex((lesson) => lesson.id === activeLesson?.id)
@@ -67,9 +92,18 @@ export function CoursePlayerPage() {
           {activeLesson?.video_url ? (
             <video
               key={activeLesson.id}
+              ref={videoRef}
               src={resolveMediaUrl(activeLesson.video_url) ?? undefined}
               controls
               className="h-full w-full"
+              onLoadedMetadata={(event) => {
+                const resumeAt = progress?.watched_seconds_by_lesson[activeLesson.id]
+                if (resumeAt) {
+                  event.currentTarget.currentTime = resumeAt
+                }
+              }}
+              onTimeUpdate={handleTimeUpdate}
+              onPause={handlePause}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-slate-400">

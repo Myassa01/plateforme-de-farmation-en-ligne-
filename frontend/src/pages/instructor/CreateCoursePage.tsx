@@ -9,12 +9,12 @@ export function CreateCoursePage() {
 
   const onSubmit = (values: CreateCourseFormValues) => {
     createCourse.mutate(values, {
-      onSuccess: () => navigate('/instructor/courses'),
+      onSuccess: (course) => navigate(`/instructor/courses/${course.id}/curriculum`),
     })
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-bold text-slate-900">Créer une formation</h1>
       <p className="mt-1 text-sm text-slate-600">
         Votre formation sera créée en brouillon. Vous pourrez la soumettre à validation une fois

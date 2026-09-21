@@ -7,4 +7,9 @@ export const playerApi = {
 
   completeLesson: (lessonId: string) =>
     apiClient.post(`/lessons/${lessonId}/complete`).then((res) => res.data),
+
+  saveWatchProgress: (lessonId: string, watchedSeconds: number) =>
+    apiClient
+      .patch(`/lessons/${lessonId}/progress`, { watched_seconds: watchedSeconds })
+      .then((res) => res.data),
 }

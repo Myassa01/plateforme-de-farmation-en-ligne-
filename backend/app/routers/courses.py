@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
@@ -97,6 +97,16 @@ def delete_course(
     current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
 ):
     CourseService(db).delete_course(course_id, current_user)
+
+
+@router.post("/courses/{course_id}/thumbnail", response_model=CourseOut)
+def upload_course_thumbnail(
+    course_id: uuid.UUID,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
+):
+    return CourseService(db).upload_thumbnail(course_id, current_user, file)
 
 
 @router.post("/courses/{course_id}/submit", response_model=CourseOut)

@@ -2,14 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/Button'
-import { TextArea } from '@/components/TextArea'
 import { TextField } from '@/components/TextField'
 import { useUpdateProfile } from '@/features/auth/hooks/useUpdateProfile'
 import { useAuth } from '@/hooks/useAuth'
+import { resolveMediaUrl } from '@/utils/media'
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  bio: z.string().max(1000, 'La bio ne peut pas dépasser 1000 caractères').optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -30,7 +29,7 @@ export function ProfilePage() {
     formState: { errors },
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { full_name: user?.full_name ?? '', bio: user?.bio ?? '' },
+    defaultValues: { full_name: user?.full_name ?? '' },
   })
 
   const onSubmit = (values: ProfileFormValues) => {
@@ -40,31 +39,39 @@ export function ProfilePage() {
   if (!user) return null
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-bold text-slate-900">Mon profil</h1>
 
-      <div className="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        <div className="flex items-center gap-4 border-b border-slate-100 pb-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-xl font-semibold text-brand-600">
-            {user.full_name.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <p className="font-medium text-slate-900">{user.email}</p>
-            <p className="text-sm text-slate-500">{roleLabels[user.role] ?? user.role}</p>
+      <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+        <div className="relative bg-gradient-to-br from-brand-500 via-brand-600 to-accent-600 px-6 py-8">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white/15 text-2xl font-semibold text-white ring-4 ring-white/30">
+              {user.avatar_url ? (
+                <img
+                  src={resolveMediaUrl(user.avatar_url) ?? undefined}
+                  alt={user.full_name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                user.full_name.charAt(0).toUpperCase()
+              )}
+            </div>
+            <div className="min-w-0 text-white">
+              <p className="truncate text-lg font-semibold">{user.full_name}</p>
+              <p className="truncate text-sm text-white/80">{user.email}</p>
+              <span className="mt-2 inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-medium">
+                {roleLabels[user.role] ?? user.role}
+              </span>
+            </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-6">
           <TextField
             label="Nom complet"
             error={errors.full_name?.message}
             {...register('full_name')}
-          />
-          <TextArea
-            label="Bio"
-            placeholder="Parlez un peu de vous..."
-            error={errors.bio?.message}
-            {...register('bio')}
           />
 
           {updateProfile.isSuccess && (

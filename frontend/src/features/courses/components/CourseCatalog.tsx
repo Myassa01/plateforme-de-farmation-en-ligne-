@@ -101,9 +101,14 @@ export function CourseCatalog({ linkBasePath }: CourseCatalogProps = {}) {
         )}
 
         {data && data.items.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {data.items.map((course) => (
-              <CourseCard key={course.id} course={course} linkBasePath={linkBasePath} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                linkBasePath={linkBasePath}
+                showWishlistToggle
+              />
             ))}
           </div>
         )}

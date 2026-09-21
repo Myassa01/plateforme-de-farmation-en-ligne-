@@ -1,5 +1,6 @@
 import uuid
 
+from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.exceptions.base import ConflictError, ForbiddenError, NotFoundError
@@ -10,6 +11,7 @@ from app.repositories.category_repository import CategoryRepository
 from app.repositories.course_repository import CourseFilters, CourseRepository
 from app.schemas.course import CourseCreate, CourseReject, CourseUpdate
 from app.services.notification_service import NotificationService
+from app.storage.local_storage import storage_service
 from app.utils.slugify import slugify
 
 
@@ -93,6 +95,13 @@ class CourseService:
         course = self.get_course(course_id)
         self._ensure_can_manage(course, current_user)
         self.repo.delete(course)
+
+    def upload_thumbnail(self, course_id: uuid.UUID, current_user: User, file: UploadFile) -> Course:
+        course = self.get_course(course_id)
+        self._ensure_can_manage(course, current_user)
+
+        course.thumbnail_url = storage_service.save_image(file)
+        return self.repo.update(course)
 
     def submit_for_review(self, course_id: uuid.UUID, current_user: User) -> Course:
         course = self.get_course(course_id)

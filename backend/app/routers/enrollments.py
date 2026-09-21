@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.database.session import get_db
 from app.dependencies.auth import require_role
 from app.models.user import User, UserRole
-from app.schemas.enrollment import EnrollmentOut
+from app.schemas.enrollment import CourseEnrollmentOut, EnrollmentOut
 from app.schemas.payment import PaymentOut, SimulatedPaymentRequest
 from app.services.enrollment_service import EnrollmentService
 from app.services.payment_service import PaymentService
@@ -32,3 +32,12 @@ def list_my_enrollments(
     student: User = Depends(require_role(UserRole.STUDENT)),
 ):
     return EnrollmentService(db).list_for_student(student.id)
+
+
+@router.get("/courses/{course_id}/students", response_model=list[CourseEnrollmentOut])
+def list_course_students(
+    course_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.INSTRUCTOR, UserRole.ADMIN)),
+):
+    return EnrollmentService(db).list_for_course(course_id, current_user)

@@ -9,18 +9,23 @@ import { formatPrice, levelLabels } from '@/features/courses/utils'
 import { useMyEnrollments } from '@/features/enrollments/hooks'
 import { PaymentModal } from '@/features/payment/components/PaymentModal'
 import { CourseReviews } from '@/features/reviews/components/CourseReviews'
-import { useAddToWishlist } from '@/features/wishlist/hooks'
+import { useAddToWishlist, useRemoveFromWishlist, useWishlist } from '@/features/wishlist/hooks'
 import { useAuth } from '@/hooks/useAuth'
+import { resolveMediaUrl } from '@/utils/media'
 
 export function CourseDetailsContent() {
   const { courseId } = useParams<{ courseId: string }>()
   const { data: course, isLoading, isError } = useCourse(courseId)
   const { isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
-  const addToWishlist = useAddToWishlist()
   const isStudent = user?.role === 'student'
   const { data: myEnrollments } = useMyEnrollments(isStudent)
   const isEnrolled = myEnrollments?.some((enrollment) => enrollment.course.id === courseId) ?? false
+
+  const { data: wishlist } = useWishlist(isStudent)
+  const addToWishlist = useAddToWishlist()
+  const removeFromWishlist = useRemoveFromWishlist()
+  const isWishlisted = wishlist?.some((item) => item.course.id === courseId) ?? false
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false)
   const [justPaid, setJustPaid] = useState(false)
@@ -33,12 +38,17 @@ export function CourseDetailsContent() {
     setIsPaymentOpen(true)
   }
 
-  const handleAddToWishlist = () => {
+  const handleToggleWishlist = () => {
     if (!isAuthenticated) {
       navigate('/login')
       return
     }
-    if (courseId) addToWishlist.mutate(courseId)
+    if (!courseId) return
+    if (isWishlisted) {
+      removeFromWishlist.mutate(courseId)
+    } else {
+      addToWishlist.mutate(courseId)
+    }
   }
 
   if (isLoading) {
@@ -60,7 +70,17 @@ export function CourseDetailsContent() {
   }
 
   return (
-    <div className="rounded-xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
+    <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+      {course.thumbnail_url && (
+        <div className="aspect-21/9 w-full bg-slate-100">
+          <img
+            src={resolveMediaUrl(course.thumbnail_url) ?? undefined}
+            alt={course.title}
+            className="h-full w-full object-cover"
+          />
+        </div>
+      )}
+      <div className="p-8">
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone="brand">{course.category.name}</Badge>
         <Badge>{levelLabels[course.level]}</Badge>
@@ -83,10 +103,10 @@ export function CourseDetailsContent() {
               {(isStudent || !isAuthenticated) && (
                 <Button
                   variant="secondary"
-                  isLoading={addToWishlist.isPending}
-                  onClick={handleAddToWishlist}
+                  isLoading={addToWishlist.isPending || removeFromWishlist.isPending}
+                  onClick={handleToggleWishlist}
                 >
-                  Ajouter aux favoris
+                  {isWishlisted ? '♥ Dans mes favoris' : '♡ Ajouter aux favoris'}
                 </Button>
               )}
               {(isStudent || !isAuthenticated) && (
@@ -104,9 +124,6 @@ export function CourseDetailsContent() {
           Inscription réussie ! Retrouvez cette formation dans "Mes formations".
         </p>
       )}
-      {addToWishlist.isSuccess && (
-        <p className="mt-4 text-sm text-green-600">Ajouté à vos favoris.</p>
-      )}
 
       <CourseReviews courseId={course.id} />
 
@@ -122,6 +139,7 @@ export function CourseDetailsContent() {
           }}
         />
       )}
+      </div>
     </div>
   )
 }

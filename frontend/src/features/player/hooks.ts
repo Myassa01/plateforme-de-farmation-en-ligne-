@@ -19,3 +19,10 @@ export function useCompleteLesson(courseId: string) {
     },
   })
 }
+
+export function useSaveWatchProgress() {
+  return useMutation({
+    mutationFn: ({ lessonId, watchedSeconds }: { lessonId: string; watchedSeconds: number }) =>
+      playerApi.saveWatchProgress(lessonId, watchedSeconds),
+  })
+}

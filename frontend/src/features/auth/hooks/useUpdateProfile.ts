@@ -5,7 +5,6 @@ import type { User } from '@/types/user'
 
 interface UpdateProfilePayload {
   full_name?: string
-  bio?: string
   avatar_url?: string
 }
 

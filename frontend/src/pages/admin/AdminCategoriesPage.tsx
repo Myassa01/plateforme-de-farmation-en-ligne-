@@ -55,7 +55,7 @@ export function AdminCategoriesPage() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-bold text-slate-900">Catégories</h1>
       <p className="mt-1 text-sm text-slate-600">
         Gérez les catégories utilisées pour classer les formations.

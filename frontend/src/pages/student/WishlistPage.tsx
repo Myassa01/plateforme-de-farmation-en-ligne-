@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom'
-import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
 import { Skeleton } from '@/components/Skeleton'
 import { CourseCard } from '@/features/courses/components/CourseCard'
-import { useRemoveFromWishlist, useWishlist } from '@/features/wishlist/hooks'
+import { useWishlist } from '@/features/wishlist/hooks'
 
 export function WishlistPage() {
   const { data, isLoading } = useWishlist()
-  const removeFromWishlist = useRemoveFromWishlist()
 
   return (
     <div>
@@ -32,20 +30,12 @@ export function WishlistPage() {
         {data && data.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {data.map((item) => (
-              <div key={item.id} className="relative">
-                <CourseCard course={item.course} linkBasePath="/student/discover" />
-                <Button
-                  variant="secondary"
-                  className="absolute right-2 top-2 !px-2 !py-1 text-xs"
-                  isLoading={removeFromWishlist.isPending}
-                  onClick={(event) => {
-                    event.preventDefault()
-                    removeFromWishlist.mutate(item.course.id)
-                  }}
-                >
-                  Retirer
-                </Button>
-              </div>
+              <CourseCard
+                key={item.id}
+                course={item.course}
+                linkBasePath="/student/discover"
+                showWishlistToggle
+              />
             ))}
           </div>
         )}

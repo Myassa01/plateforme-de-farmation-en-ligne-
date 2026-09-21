@@ -14,7 +14,7 @@ export function AdminCreateCoursePage() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-bold text-slate-900">Créer une formation</h1>
       <p className="mt-1 text-sm text-slate-600">
         En tant qu'admin, vous pouvez créer une formation directement.

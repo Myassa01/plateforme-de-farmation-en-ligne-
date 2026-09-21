@@ -7,6 +7,8 @@ import { Skeleton } from '@/components/Skeleton'
 import { useApproveCourse, useRejectCourse } from '@/features/courses/hooks/useCourseMutations'
 import { useAllCourses } from '@/features/courses/hooks/useAllCourses'
 import { formatPrice, statusLabels, statusTones } from '@/features/courses/utils'
+import { CourseStudentsPanel } from '@/features/enrollments/components/CourseStudentsPanel'
+import { resolveMediaUrl } from '@/utils/media'
 
 export function AdminCoursesPage() {
   const { data, isLoading } = useAllCourses()
@@ -14,6 +16,7 @@ export function AdminCoursesPage() {
   const rejectCourse = useRejectCourse()
   const [rejectingId, setRejectingId] = useState<string | null>(null)
   const [reason, setReason] = useState('')
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null)
 
   const handleReject = (id: string) => {
     if (!reason.trim()) return
@@ -57,18 +60,43 @@ export function AdminCoursesPage() {
           <div className="flex flex-col gap-3">
             {data.items.map((course) => (
               <div key={course.id} className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium text-slate-900">{course.title}</p>
-                      <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <div className="aspect-square w-28 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                      {course.thumbnail_url ? (
+                        <img
+                          src={resolveMediaUrl(course.thumbnail_url) ?? undefined}
+                          alt={course.title}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
+                          Pas d'image
+                        </div>
+                      )}
                     </div>
-                    <p className="text-sm text-slate-500">
-                      Par {course.instructor.full_name} · {course.category.name} ·{' '}
-                      {formatPrice(course.price)}
-                    </p>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate font-medium text-slate-900">{course.title}</p>
+                        <Badge tone={statusTones[course.status]}>{statusLabels[course.status]}</Badge>
+                      </div>
+                      <p className="text-sm text-slate-500">
+                        Par {course.instructor.full_name} · {course.category.name} ·{' '}
+                        {formatPrice(course.price)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex shrink-0 items-center gap-2">
+                    {course.status === 'published' && (
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setExpandedCourseId(expandedCourseId === course.id ? null : course.id)
+                        }
+                      >
+                        {expandedCourseId === course.id ? 'Masquer les étudiants' : 'Voir les étudiants'}
+                      </Button>
+                    )}
                     {course.status === 'pending' && (
                       <>
                         <Button
@@ -90,6 +118,8 @@ export function AdminCoursesPage() {
                     )}
                   </div>
                 </div>
+
+                {expandedCourseId === course.id && <CourseStudentsPanel courseId={course.id} />}
 
                 {rejectingId === course.id && (
                   <div className="mt-4 flex gap-2 border-t border-slate-200 pt-4">

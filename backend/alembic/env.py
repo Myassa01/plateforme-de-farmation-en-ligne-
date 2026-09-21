@@ -11,6 +11,8 @@ from app.models import (  # noqa: F401
     answer,
     attempt_answer,
     category,
+    certificate,
+    certificate_settings,
     course,
     enrollment,
     lesson,

@@ -28,6 +28,14 @@ class EnrollmentRepository:
         stmt = select(Enrollment).where(Enrollment.course_id == course_id)
         return len(list(self.db.scalars(stmt).all()))
 
+    def list_for_course(self, course_id: uuid.UUID) -> list[Enrollment]:
+        stmt = (
+            select(Enrollment)
+            .where(Enrollment.course_id == course_id)
+            .order_by(Enrollment.enrolled_at.desc())
+        )
+        return list(self.db.scalars(stmt).all())
+
     def create(self, enrollment: Enrollment) -> Enrollment:
         self.db.add(enrollment)
         self.db.commit()
