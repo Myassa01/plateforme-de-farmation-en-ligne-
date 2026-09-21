@@ -137,15 +137,6 @@ backend/
 
 La liste complète et interactive est disponible sur `/docs` une fois le serveur lancé.
 
-## Comptes de démonstration
-
-Après avoir exécuté `python -m app.utils.seed` :
-
-| Rôle | Email | Mot de passe |
-|---|---|---|
-| Admin | `admin@learnhub.dev` | `Admin123!` |
-| Instructor | `instructor@learnhub.dev` | `Instructor123!` |
-| Student | `student@learnhub.dev` | `Student123!` |
 
 ## Tests
 
