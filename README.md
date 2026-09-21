@@ -40,7 +40,6 @@ Voir le détail de l'architecture backend et frontend dans les sections ci-desso
 ## Installation
 
 ### Prérequis
-
 - Python 3.10+
 - PostgreSQL 16+ (local ou via Docker)
 - Node.js 20+ (pour le frontend, Phase 3)
@@ -145,6 +144,3 @@ cd backend
 pytest
 ```
 
-## Captures d'écran
-
-_À ajouter une fois le frontend développé (Phase 3)._
